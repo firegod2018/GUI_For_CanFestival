@@ -1,0 +1,48 @@
+app-title:
+objdictedit
+
+app-version:
+$Revision: 1.48 $
+
+cwd:
+D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen
+
+date:
+Thu Feb 13 10:18:32 2020
+
+e-type:
+<class 'AttributeError'>
+
+e-value:
+module 'wx' has no attribute 'EVT_HTML_LINK_CLICKED'
+
+locals:
+    self: <__main__.HtmlFrame object at 0x00000000039FCF78>
+    prnt: <__main__.objdictedit object at 0x00000000039FC678>
+
+platform:
+Windows-7-6.1.7601-SP1
+
+python-version:
+3.7.5
+
+self:
+    HtmlContent: <__main__.UrlClickHtmlWindow object at 0x0000000003A06318>
+
+traceback:
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 441, in OnAboutMenu
+    self.OpenHtmlFrame(_("About CAN Festival"), os.path.join(ScriptDirectory, "doc/about.html"), wx.Size(500, 450))
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 446, in OpenHtmlFrame
+    window = HtmlFrame(self, self.HtmlFrameOpened)
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 138, in __init__
+    self._init_ctrls(parent)
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 135, in _init_ctrls
+    self.HtmlContent.Bind(wx.html.EVT_HTML_LINK_CLICKED, self.OnLinkClick)
+<class 'AttributeError'>: module 'wx' has no attribute 'EVT_HTML_LINK_CLICKED'
+
+wx-platform:
+__WXMSW__
+
+wx-version:
+4.0.7.post2
+
