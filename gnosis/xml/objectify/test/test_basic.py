@@ -9,14 +9,14 @@ if len(sys.argv) > 1:
             try:
                 xml_obj = XML_Objectify(filename, parser=parser)
                 py_obj = xml_obj.make_instance()
-                print pyobj_printer(py_obj).encode('UTF-8')
-                print "++ SUCCESS ( using", parser, ")"
-                print "="*50
+                print(pyobj_printer(py_obj).encode('UTF-8'))
+                print("++ SUCCESS ( using", parser, ")")
+                print("="*50)
             except:
                 raise
-                print "++ FAILED ( using", parser, ")"
-                print "="*50
+                print("++ FAILED ( using", parser, ")")
+                print("="*50)
 else:
-    print "Please specify one or more XML files to Objectify."
+    print("Please specify one or more XML files to Objectify.")
 
 

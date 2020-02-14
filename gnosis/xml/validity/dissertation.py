@@ -58,19 +58,19 @@ if __name__=='__main__':
     # Define a new type that is a Seq containing a Seq
     class section(Seq): _order = (dedication, chapter)
 
-    print "____________ Fully spelled out section initialization _________________"
-    print explicit_section
-    print '--'
-    print eval(explicit_section)
+    print("____________ Fully spelled out section initialization _________________")
+    print(explicit_section)
+    print('--')
+    print(eval(explicit_section))
 
-    print "________ Aggressive use of 'lifting' in initialization ________________"
-    print lifting_section
-    print '--'
-    print eval(lifting_section)
+    print("________ Aggressive use of 'lifting' in initialization ________________")
+    print(lifting_section)
+    print('--')
+    print(eval(lifting_section))
 
-    print "________ Various other OK initializations and operations ______________"
-    print "            (See code for comments and constructs)"
-    print
-    print mk_dissertation()
+    print("________ Various other OK initializations and operations ______________")
+    print("            (See code for comments and constructs)")
+    print()
+    print(mk_dissertation())
 
 

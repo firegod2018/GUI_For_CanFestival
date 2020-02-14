@@ -137,8 +137,8 @@ __version__="version 0.2 (August 2000)"
 
 #-- import stuff, or at least try
 import py2html, sys, re, string, time
-from urllib import urlopen
-from cStringIO import *
+from urllib.request import urlopen
+from io import *
 try:
     import py2html
     py_formatter = 1
@@ -254,13 +254,13 @@ def main(cfg_dict):
 
     #-- Process as needed for input type
     if intype in ['HTML']:
-        if cfg_dict.has_key('preface'): fhout.write(cfg_dict['preface'])
+        if 'preface' in cfg_dict: fhout.write(cfg_dict['preface'])
         doc = ''
         for line in fhin.readlines():   # Need to normalize line endings!
             doc = doc+string.rstrip(line)+'\n'
         if cfg_dict['proxy'] in ['ALL', 'NAVIGATOR']:   # proxy nav bar
             doc = re.sub('(?im)(<BODY(?:.*?)>)','\\1'+(promo % cfg_dict),doc)
-        if cfg_dict['proxy'] <> 'NONE':                 # absolute links
+        if cfg_dict['proxy'] != 'NONE':                 # absolute links
             doc = Absolutize(doc, source)
         if cfg_dict['proxy'] in ['ALL', 'TRAP_LINKS']:  # proxy links
             doc = Proxify(doc, cgi_home+'txt2html.cgi?source=')
@@ -328,7 +328,7 @@ def Make_Blocks(fhin, re_list):
             else: blocks[bl_num] = blocks[bl_num] + line
 
         else:
-            raise ValueError, "unexpected input block state: "+state
+            raise ValueError("unexpected input block state: "+state)
 
     return blocks
 
@@ -363,13 +363,13 @@ def Process_Blocks(fhout, blocks, cfg_dict, title_block=0):
             elif block[:6]=='[QUOT]': block = fixquote(block[6:])
             elif block[:6]=='[TEXT]': block = fixtext(block[6:])
             elif block[:6]=='[HEAD]': block = fixhead(block[6:])
-            else: raise ValueError, "unexpected block marker: "+block[:6]
+            else: raise ValueError("unexpected block marker: "+block[:6])
             if cfg_dict['proxy'] in ['ALL', 'TRAP_LINKS']:
                 block = Proxify(block, cgi_home+'txt2html.cgi?source=')
             body = body+block
 
     #-- Output with surrounding document HTML/HTTP
-    if cfg_dict.has_key('preface'):
+    if 'preface' in cfg_dict:
         fhout.write(cfg_dict['preface'])
     fhout.write(html_open % html_title)
     if cfg_dict['proxy'] in ['ALL', 'NAVIGATOR']:
@@ -378,12 +378,12 @@ def Process_Blocks(fhout, blocks, cfg_dict, title_block=0):
     fhout.write(html_close)
 
 def ErrReport(mess, cfg_dict):
-    if cfg_dict.has_key('preface'):  print cfg_dict['preface']
-    print (html_open % html_title)
+    if 'preface' in cfg_dict:  print(cfg_dict['preface'])
+    print((html_open % html_title))
     if cfg_dict['proxy'] in ['ALL', 'NAVIGATOR']:
-        print (promo % cfg_dict)
-    print '<h1>'+mess+'</h1>'
-    print html_close
+        print((promo % cfg_dict))
+    print('<h1>'+mess+'</h1>')
+    print(html_close)
 
 
 #-- Functions for start of block-type state
@@ -440,7 +440,7 @@ def Authorify(block):
     block = string.replace(block, '[HEAD]', '')
     #block = string.strip(block)
     lines = string.split(block, '\n')
-    block = "<p>" +string.join(map(lambda ln:  ln+'<br>\n', lines))+"</p>\n"
+    block = "<p>" +string.join([ln+'<br>\n' for ln in lines])+"</p>\n"
     block = Typographify(block)
     return block
 
@@ -567,7 +567,7 @@ def NoRule(txt):
     return re.compile('^-+$', re.M).sub('', txt)
 
 try:
-    from mxTypographify import Typographify
+    from .mxTypographify import Typographify
     sys.stderr.write("** Using mxTypographify **\n")
 except ImportError:
     def Typographify(txt):
@@ -622,7 +622,7 @@ def ParseArgs(list):
 
     for item in list:
         if item in ['-h','/h','-?','/?', '?']:  # help screen
-            print __doc__; return None
+            print(__doc__); return None
         if item[0] in '/-':                     # a switch!
             if upper(item[1:5]) == 'TYPE':      # set type
                 cfg_dict['type'] = upper(item[6:])
@@ -677,19 +677,19 @@ def ParseCGI():
     cfg_dict = {'target': '<STDOUT>'}
     sys.stderr = sys.stdout
     form = cgi.FieldStorage()
-    if form.has_key('source'):
+    if 'source' in form:
         cfg_dict['source'] = form['source'].value
     else:
         cfg_dict['source'] = '../rc/txt2html.txt'
-    if form.has_key('type') and upper(form['type'].value)<>'INFER':
+    if 'type' in form and upper(form['type'].value)!='INFER':
         cfg_dict['type'] = upper(form['type'].value)
     else:
         cfg_dict['type'] = infer_type(cfg_dict['source'])
-    if form.has_key('preface'):             # use with caution!
+    if 'preface' in form:             # use with caution!
         cfg_dict['preface'] = form['preface'].value
     else:
         cfg_dict['preface'] = 'Content-type: text/html\n\n'
-    if form.has_key('proxy'):
+    if 'proxy' in form:
         cfg_dict['proxy'] = form['proxy'].value
     else:
         cfg_dict['proxy'] = 'ALL'

@@ -1,4 +1,4 @@
-from dmTxt2Html import *
+from .dmTxt2Html import *
 import glob
 
 txts = glob.glob('*.txt')

@@ -43,7 +43,7 @@ class MetaYamlDump(type):
 class MetaPyPickler(type):
     "Metaclass for cPickle serialization"
     def __init__(cls, name, bases, dict):
-        from cPickle import dumps
+        from pickle import dumps
         super(MetaPyPickler, cls).__init__(name, bases, dict)
         setattr(cls, 'dumps', lambda self: dumps(self))
 
@@ -53,6 +53,6 @@ class MetaPrettyPrint(type):
         from pprint import pformat
         super(MetaPrettyPrint, cls).__init__(name, bases, dict)
         def dumps(self):
-            return `self`+'\n'+pformat(self.__dict__)
+            return repr(self)+'\n'+pformat(self.__dict__)
         setattr(cls, 'dumps', dumps)
 

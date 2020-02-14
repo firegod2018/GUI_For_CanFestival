@@ -9,7 +9,7 @@ def test_list( ovlist, tname, test ):
         sys.stdout.write('OBJ %s ' % str(o))
 
         if (v and test(o)) or (not v and not test(o)):
-            print "%s = %d .. OK" % (tname,v)
+            print("%s = %d .. OK" % (tname,v))
         else:
             raise "ERROR - Wrong answer to test."
         
@@ -74,7 +74,7 @@ if pyver() >= '2.2':
 
 # isImmutable
 ol = [ ('abc',1),
-       (u'abc',1),
+       ('abc',1),
        (1,1),
        (1.2,1),
        ((1,2),1),

@@ -108,7 +108,7 @@ add_mutator(mutate_sre())
 
 # save the pickle in the element body
 
-try:	import cPickle as pickle
+try:	import pickle as pickle
 except: import pickle
 
 class mutate_rawpickle(XMLP_Mutator):
@@ -155,8 +155,8 @@ class mutate_mxdatetime(XMLP_Mutator):
         # float where an int was expected
         #return apply(mx.DateTime.DateTime,map(float,m.groups()))		
 
-        args = map(int,m.groups()[:5]) + [float(m.group(6))]
-        return apply(mx.DateTime.DateTime,args)
+        args = list(map(int,m.groups()[:5])) + [float(m.group(6))]
+        return mx.DateTime.DateTime(*args)
 
 if mxDateTime_type is not None:
     add_mutator(mutate_mxdatetime())

@@ -10,11 +10,11 @@ if __name__=='__main__':
     sect = LiftSeq(section,('To Mom',
                             ('It starts','When it began...')))
 
-    print sect
-    print sect.with_internal_subset()
+    print(sect)
+    print(sect.with_internal_subset())
 
-    print eval(explicit_section).with_internal_subset()
-    print eval(lifting_section).with_internal_subset()
+    print(eval(explicit_section).with_internal_subset())
+    print(eval(lifting_section).with_internal_subset())
 
     "Miscellaneous other typical uses"
     p = paragraph(['spam and eggs', figure(), 'toast'])
@@ -30,6 +30,6 @@ if __name__=='__main__':
     ps_ch1.append("whatever")
     ps_ch1 += "Just words"
     del ps_ch1[-2]
-    print diss.with_internal_subset()
+    print(diss.with_internal_subset())
 
 

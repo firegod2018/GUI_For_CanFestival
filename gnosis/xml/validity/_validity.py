@@ -7,7 +7,7 @@ TODO: Need ANY type for <!ELEMENT tag ANY> declarations
       (not to be confused with Any(Quantification)
 """
 from operator import add
-from sys import maxint
+from sys import maxsize
 
 class ValidityError(TypeError): pass
 class LengthError(ValidityError): pass
@@ -16,9 +16,9 @@ class ReprError(ValidityError): pass
 def match_type(item, types):
     # We might use metaclass, so don't check actual 'type(item)'
     # ...instead, just be satisfied if it -looks- like right thing
-    return repr(type(item)) in map(repr, types)
+    return repr(type(item)) in list(map(repr, types))
 
-class PCDATA(unicode):
+class PCDATA(str):
     def __init__(self, s):
         self._tag = self.__class__.__name__
     def __str__(self):
@@ -29,7 +29,7 @@ class PCDATA(unicode):
                    (self._tag, self.encode('utf-8'), self._tag)
     def validate(self): pass
 
-toPCDATA = lambda lst: map(PCDATA, lst)
+toPCDATA = lambda lst: list(map(PCDATA, lst))
 
 class EMPTY(object):
     def __init__(self, initlist=[]):
@@ -39,15 +39,13 @@ class EMPTY(object):
         return '<%s />' % (self._tag)
     def validate(self):
         if self._tag[0] == '_':
-            raise ReprError, \
-                  "Initial underscore in class %s indicates non-tag" \
-                  % (self._tag,)
+            raise ReprError("Initial underscore in class %s indicates non-tag" \
+                  % (self._tag,))
 
 class Or(object):
     def __init__(self, disjunct):
         if not hasattr(self.__class__, '_disjoins'):
-            raise NotImplementedError, \
-                  "Child of Abstract Class Or must specify list of disjoins"
+            raise NotImplementedError("Child of Abstract Class Or must specify list of disjoins")
         self._tag = self.__class__.__name__
         disjunct = self.lift(disjunct)
         self.checkitem(disjunct)
@@ -59,13 +57,12 @@ class Or(object):
             return '<%s>%s</%s>\n' % (self._tag, self._data, self._tag)
     def checkitem(self, item):
         if not match_type(item, self._disjoins):
-            raise ValidityError, \
-                  "\n%s not in: \n  %s" % \
-                  (type(item),'\n  '.join(map(repr,self._disjoins)))
+            raise ValidityError("\n%s not in: \n  %s" % \
+                  (type(item),'\n  '.join(map(repr,self._disjoins))))
     def validate(self):
         self.checkitem(self._data)
     def lift(self, item):
-        if PCDATA in self._disjoins and type(item) in (str, unicode):
+        if PCDATA in self._disjoins and type(item) in (str, str):
             item = PCDATA(item)
         # XXX -- can we reason abt other disjoins and their initializers?
         return item
@@ -90,10 +87,9 @@ class Seq(tuple):
     """
     def __init__(self, inittup):
         if not hasattr(self.__class__, '_order'):
-            raise NotImplementedError, \
-                  "Child of Abstract Class Seq must specify order"
+            raise NotImplementedError("Child of Abstract Class Seq must specify order")
         if not isinstance(self._order, tuple):
-            raise ValidityError, "Seq must have tuple as 'order'"
+            raise ValidityError("Seq must have tuple as 'order'")
         self.validate()
         self._tag = self.__class__.__name__
     def __str__(self):
@@ -105,21 +101,18 @@ class Seq(tuple):
     def validate(self):
         for item, type_ in zip(self, self._order):
             if not match_type(item,[type_]):
-                raise ValidityError, \
-                      "Item %s must be of type %s (in %s)" % \
-                      (type(item), type_, self._tag)
+                raise ValidityError("Item %s must be of type %s (in %s)" % \
+                      (type(item), type_, self._tag))
 
 def LiftSeq(klass, items):
     #-- Make sure klass has necessary _order specification
     if not hasattr(klass, '_order'):
-        raise NotImplementedError, \
-              "Child of Abstract Class Seq must specify order"
+        raise NotImplementedError("Child of Abstract Class Seq must specify order")
     #-- Examine items:
     # (1) is it the right length?
     if len(items) != len(klass._order):
-        raise LengthError, \
-              "Sequence for %s must contain %s elements" % \
-              (klass.__name__, len(klass._order))
+        raise LengthError("Sequence for %s must contain %s elements" % \
+              (klass.__name__, len(klass._order)))
     # (2) is each item usable (lifted if necessary)
     lifted = []
     for item, type_ in zip(items, klass._order):
@@ -134,12 +127,11 @@ def LiftSeq(klass, items):
 class Quantification(list):
     def __init__(self, initlist=[]):
         if not hasattr(self.__class__, '_type'):
-            raise NotImplementedError, \
-                  "Child of Abstract Quantification must specify type_"
+            raise NotImplementedError("Child of Abstract Quantification must specify type_")
         self._tag = self.__class__.__name__
         initlist = self.lift(initlist)
         if not self.min_length <= len(initlist) <= self.max_length:
-            raise LengthError, self.length_message % self._tag
+            raise LengthError(self.length_message % self._tag)
         else:
             list.__init__(self, initlist)
     def __setitem__(self, pos, item):
@@ -150,7 +142,7 @@ class Quantification(list):
     def extend(self, items):
         items = self.lift(items)
         if len(self)+len(items) > self.max_length:
-            raise LengthError, self.length_message % self._tag
+            raise LengthError(self.length_message % self._tag)
         else:
             for item in items:
                 self.checkitem(item)
@@ -160,7 +152,7 @@ class Quantification(list):
         return self
     def __delitem__(self, i):
         if len(self)-1 < self.min_length:
-            raise LengthError, self.length_message % self._tag
+            raise LengthError(self.length_message % self._tag)
         list.__delitem__(self, i)
     def __str__(self):
         contents = ''.join([str(item) for item in self])
@@ -170,14 +162,13 @@ class Quantification(list):
             return '<%s>%s</%s>\n' % (self._tag, contents, self._tag)
     def validate(self, deep=1):
         if not self.min_length <= len(self) <= self.max_length:
-            raise LengthError, self.length_message % self._tag
+            raise LengthError(self.length_message % self._tag)
         if deep:
             for item in self: item.validate()
     def checkitem(self, item):
         if not match_type(item,[self._type]):
-            raise ValidityError, \
-                  "Items in %s must be of type %s (not %s)" % \
-                  (self._tag, self._type, type(item))
+            raise ValidityError("Items in %s must be of type %s (not %s)" % \
+                  (self._tag, self._type, type(item)))
     def lift(self, items):
         # To be friendly, a list of items can be lifted into a list
         # or the type itself.  Extra nice is that we also "lift" a

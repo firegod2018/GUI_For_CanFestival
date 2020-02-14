@@ -26,17 +26,17 @@ def checkfoo(o1,o2):
             raise "ERROR(1)"
     
 def printfoo(obj):
-    print(type(obj.sre), obj.sre.pattern)
-    print(type(obj.d), ":%s:%s:" % \
-          (obj.d['One'].pattern, obj.d['Two'].pattern))
-    print(type(obj.ud), ":%s:%s:" % \
-          (obj.ud['OneOne'].pattern, obj.ud['TwoTwo'].pattern))
-    print(type(obj.l), ":%s:%s" % \
-          (obj.l[0].pattern, obj.l[1].pattern))
-    print(type(obj.ul), ":%s:%s" % \
-          (obj.ul[0].pattern, obj.ul[1].pattern))
-    print(type(obj.tup), ":%s:%s:" % \
-          (obj.tup[0].pattern, obj.tup[1].pattern))
+    print((type(obj.sre), obj.sre.pattern))
+    print((type(obj.d), ":%s:%s:" % \
+          (obj.d['One'].pattern, obj.d['Two'].pattern)))
+    print((type(obj.ud), ":%s:%s:" % \
+          (obj.ud['OneOne'].pattern, obj.ud['TwoTwo'].pattern)))
+    print((type(obj.l), ":%s:%s" % \
+          (obj.l[0].pattern, obj.l[1].pattern)))
+    print((type(obj.ul), ":%s:%s" % \
+          (obj.ul[0].pattern, obj.ul[1].pattern)))
+    print((type(obj.tup), ":%s:%s:" % \
+          (obj.tup[0].pattern, obj.tup[1].pattern)))
 
 foo = foo_class()
 

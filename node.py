@@ -21,7 +21,7 @@
 #License along with this library; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import _pickle as cPickle
+import pickle as cPickle
 from types import *
 import re
 
@@ -211,8 +211,7 @@ MappingDictionary = {
                  {"name" : "Transmission Type", "type" : 0x05, "access" : 'rw', "pdo" : False},
                  {"name" : "Inhibit Time", "type" : 0x06, "access" : 'rw', "pdo" : False},
                  {"name" : "Compatibility Entry", "type" : 0x05, "access" : 'rw', "pdo" : False},
-                 {"name" : "Event Timer", "type" : 0x06, "access" : 'rw', "pdo" : False},
-                 {"name" : "SYNC start value", "type" : 0x05, "access" : 'rw', "pdo" : False}]},
+                 {"name" : "Event Timer", "type" : 0x06, "access" : 'rw', "pdo" : False}]},
     0x1600 : {"name" : "Receive PDO %d Mapping[(idx)]", "struct" : plurirec, "incr" : 1, "nbmax" : 0x200, "need" : False, "values" :
                 [{"name" : "Number of Entries", "type" : 0x05, "access" : 'rw', "pdo" : False},
                  {"name" : "PDO %d Mapping for an application object %d[(idx,sub)]", "type" : 0x07, "access" : 'rw', "pdo" : False, "nbmin" : 0, "nbmax" : 0x40}]},

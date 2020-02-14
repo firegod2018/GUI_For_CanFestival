@@ -3,7 +3,7 @@
 Please see the information at gnosis.xml.objectify.doc for additional
 explanation of usage, design, license, and other details
 """
-from __future__ import generators
+
 from gnosis.xml.objectify._objectify import _XO_
 from gnosis.xml.objectify._objectify import *
 from exceptions import TypeError
@@ -48,8 +48,7 @@ def write_xml(o, out=stdout):
 def XPath(o, path):
     "Find node(s) within an _XO_ object"
     if not isinstance(o,_XO_):
-        raise TypeError, \
-              "XPath() only defined on gnosis.xml.objectify._XO_ object"
+        raise TypeError("XPath() only defined on gnosis.xml.objectify._XO_ object")
     path = path.replace('//','/!!') # Placeholder hack for easy splitting
     if path.startswith('/'):        # No need for init / since node==root
         path = path[1:]
@@ -89,7 +88,7 @@ def XPath(o, path):
 def indices(path):
     if '[' in path:                 # Check for indices
         path, param = path[:-1].split('[')
-        slice_ = map(int, param.split('..'))
+        slice_ = list(map(int, param.split('..')))
         start = slice_[0]-1
         if len(slice_) == 2:
             stop = slice_[1]
@@ -100,7 +99,7 @@ def indices(path):
     return path, start, stop
 
 def _dir(o):
-    try:    return o.__dict__.keys()
+    try:    return list(o.__dict__.keys())
     except: return []
 
 #-- Self-test utility functions
@@ -125,7 +124,7 @@ def pyobj_printer(py_obj, level=0):
                     descript += (' '*level)+'\n'+pyobj_printer(member[i],level+3)
             else:
                 descript += (' '*level)+membname+'='
-                memval = ' '.join(unicode(member).split())
+                memval = ' '.join(str(member).split())
                 if len(memval) > 50:
                     descript += memval[:50]+'...\n'
                 else:

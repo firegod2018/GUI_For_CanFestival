@@ -61,7 +61,7 @@ def walkNodes(py_obj, parent_info=('',''), seq=0):
                     # primary key of parent table
     insDct['parent_key'] = parent_info[1]
                     # primary key is stringified random BIGINT
-    insDct['primary_key'] = str(long(random.random() * 10**18L))
+    insDct['primary_key'] = str(int(random.random() * 10**18))
                     # start out with empty strings of other columns/values
     insDct['other_cols'] = ""
     insDct['other_vals'] = ""
@@ -69,7 +69,7 @@ def walkNodes(py_obj, parent_info=('',''), seq=0):
 
     self_info = (insDct['table_name'],insDct['primary_key'])
 
-    for colname in py_obj.__dict__.keys():
+    for colname in list(py_obj.__dict__.keys()):
         safename = colname.replace('-','__')
         if colname == "__parent__":
            continue             # ExpatFactory uses bookeeping attribute
@@ -107,18 +107,18 @@ def walkNodes(py_obj, parent_info=('',''), seq=0):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in ('-h','/h','-?','/?','?','--help'):
-            print __shell_usage__
+            print(__shell_usage__)
         else:
             keep_containers(MAYBE)      # Keep XML iff character markup
             py_obj = XML_Objectify(sys.argv[1],DOM).make_instance()
             walkNodes(py_obj)
             for insertLine in insertLines:
-                print insertLine.encode('UTF-8')+';'
+                print(insertLine.encode('UTF-8')+';')
     else:
         keep_containers(MAYBE)      # Keep XML iff character markup
         py_obj = XML_Objectify(sys.stdin,DOM).make_instance()
         walkNodes(py_obj)
         for insertLine in insertLines:
-            print insertLine.encode('UTF-8')+';'
+            print(insertLine.encode('UTF-8')+';')
 
 

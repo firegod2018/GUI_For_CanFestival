@@ -1,6 +1,6 @@
 "Add DTD auto-generation to gnosis.xml.validity classes"
 
-from sys import maxint
+from sys import maxsize
 class DTDGenerator(type):
     declarations = []
     def __init__(cls, name, bases, dict):
@@ -26,12 +26,12 @@ class DTDGenerator(type):
             add((name, 'EMPTY', None))
         elif issubclass(cls, gxv.Or):
             items = []
-            for item in map(lambda c: c.__name__, cls._disjoins):
+            for item in [c.__name__ for c in cls._disjoins]:
                 if item=='PCDATA': items.append('#PCDATA')
                 else: items.append(item)
             add((name, 'Or', tuple(items)))
         elif issubclass(cls, gxv.Seq):
-            items = map(lambda c: c.__name__, cls._order)
+            items = [c.__name__ for c in cls._order]
             add((name, 'Seq', tuple(items)))
         elif issubclass(cls, gxv.Quantification):
             # This relies on each Quantification descendent being
@@ -66,7 +66,7 @@ class DTDGenerator(type):
 
         # On second pass, generate substitutions
         subs = {}
-        for name, (type_, data) in defer.items():
+        for name, (type_, data) in list(defer.items()):
             if   type_=='Seq':  subs[name] = "(%s)" % ",".join(data)
             elif type_=='Or':   subs[name] = "(%s)" % "|".join(data)
             elif type_=='Some': subs[name] = "%s+" % data
@@ -78,13 +78,13 @@ class DTDGenerator(type):
             prev = ""
             while prev != dct[key]:
                 prev = dct[key]
-                for old, new in dct.items():
+                for old, new in list(dct.items()):
                     dct[key] = dct[key].replace(old, new)
-        map(lambda x: expand(x, subs), subs.keys())
+        list(map(lambda x: expand(x, subs), list(subs.keys())))
 
         # On final pass, substitute-in to the declarations
-        for decl, i in zip(decl_list, xrange(maxint)):
-            for name, sub in subs.items():
+        for decl, i in zip(decl_list, range(maxint)):
+            for name, sub in list(subs.items()):
                 decl = decl.replace(name, sub)
             decl_list[i] = decl
         return '\n'.join(decl_list)

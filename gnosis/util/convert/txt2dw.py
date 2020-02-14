@@ -95,10 +95,10 @@ __version__="version 0.1 (August 2001)"
 
 #-- import stuff, or at least try
 import sys, re, string, time
-from urllib import urlopen
-from cStringIO import *
+from urllib.request import urlopen
+from io import *
 try:
-    import dw_colorize
+    from . import dw_colorize
     py_formatter = 1
 except:
     py_formatter = 0
@@ -167,25 +167,25 @@ def Make_Blocks(fhin, re_list):
             elif textln.match(line):  startText(line)
             else: blocks[bl_num] += line
         else:
-            raise ValueError, "unexpected input block state: "+state
+            raise ValueError("unexpected input block state: "+state)
     return blocks
 
 def Process_Blocks(blocks):
     # Process all blocks, then write out headers and body
-    print '<?xml version="1.0" encoding="UTF-8"?>'
-    print '<?xml-stylesheet'
-    print '      href="http://gnosis.cx/publish/programming/dW.css"'
-    print '      type="text/css"?>'
-    print '<article ratings="auto" toc="auto">'
+    print('<?xml version="1.0" encoding="UTF-8"?>')
+    print('<?xml-stylesheet')
+    print('      href="http://gnosis.cx/publish/programming/dW.css"')
+    print('      type="text/css"?>')
+    print('<article ratings="auto" toc="auto">')
 
     # Title elements
     head = Detag(blocks[1].replace('[HEAD]',''))
     maintitle, subtitle = head.split('\n')[:2]
     series, paper = maintitle.split(':')
     #--
-    print '  <seriestitle>%s</seriestitle>' % series
-    print '  <papertitle>%s</papertitle>'   % Typography(paper)
-    print '  <subtitle>%s</subtitle>'       % Typography(subtitle)
+    print('  <seriestitle>%s</seriestitle>' % series)
+    print('  <papertitle>%s</papertitle>'   % Typography(paper))
+    print('  <subtitle>%s</subtitle>'       % Typography(subtitle))
 
     # Author and category elements
     author = Detag(blocks[2].replace('[HEAD]',''))
@@ -197,15 +197,15 @@ def Process_Blocks(blocks):
     biopic = bio[0].split(':',1)[1].strip()[:-1]
     biotxt = Detag('  '+'\n  '.join(bio[1:-1]))
     #--
-    print '  <author company="%s"'  % company
-    print '          jobtitle="%s"' % jobtitle
-    print '          name="%s">'    % name
-    print '    <img src="%s" />'    % biopic
-    print '%s'                      % URLify(Typography(Detag(biotxt)))
-    print '  </author>'
-    print '  <date month="%s" year="%s" />' % (month,year)
-    print '  <zone name="xml" />'
-    print '  <meta name="KEYWORDS" content="Mertz" />'
+    print('  <author company="%s"'  % company)
+    print('          jobtitle="%s"' % jobtitle)
+    print('          name="%s">'    % name)
+    print('    <img src="%s" />'    % biopic)
+    print('%s'                      % URLify(Typography(Detag(biotxt))))
+    print('  </author>')
+    print('  <date month="%s" year="%s" />' % (month,year))
+    print('  <zone name="xml" />')
+    print('  <meta name="KEYWORDS" content="Mertz" />')
 
     # The abstract goes here
     block = blocks[3]
@@ -217,9 +217,9 @@ def Process_Blocks(blocks):
         elif block[:6]=='[QUOT]': fixquote(block[6:])
         elif block[:6]=='[TEXT]': fixtext(block[6:])
         elif block[:6]=='[HEAD]': fixhead(block[6:])
-        else: raise ValueError, "unexpected block marker: "+block[:6]
+        else: raise ValueError("unexpected block marker: "+block[:6])
 
-    print '</article>'
+    print('</article>')
 
 #-- Functions for start of block-type state
 def startHead(line):
@@ -267,28 +267,28 @@ def fixcode(block, doctype='UNKNOWN'):
                          string.count(title,'python') or
                          string.count(title,'py_') or
                          doctype == 'PYTHON'):
-        print ('<p><heading refname="code1" type="code" toc="yes">%s</heading>'
-               % Typography(title))
-        print '<code type="section">',
+        print(('<p><heading refname="code1" type="code" toc="yes">%s</heading>'
+               % Typography(title)))
+        print('<code type="section">', end=' ')
         dw_colorize.Parser(block.rstrip()).toXML()
-        print '</code></p>'
+        print('</code></p>')
     # elif the-will-and-the-way-is-there-to-format-language-X:
     # elif the-will-and-the-way-is-there-to-format-language-Y:
     else:
         block = Detag(block)
-        print code_block % (Typography(title), block.strip())
+        print(code_block % (Typography(title), block.strip()))
 
 def fixquote(block):
-    print '<blockquote>\n%s</blockquote>' % URLify(Typography(Detag(block)))
+    print('<blockquote>\n%s</blockquote>' % URLify(Typography(Detag(block))))
 
 def fixabstract(block):
-    print '<abstract>\n%s</abstract>' % URLify(Typography(Detag(block)))
+    print('<abstract>\n%s</abstract>' % URLify(Typography(Detag(block))))
 
 def fixtext(block):
-    print '<p>\n%s</p>' % URLify(Typography(NoRule(Detag(block))))
+    print('<p>\n%s</p>' % URLify(Typography(NoRule(Detag(block)))))
 
 def fixhead(block):
-    print '\n%s' % Typography(AdjustCaps(NoRule(Detag(block)))+' ')
+    print('\n%s' % Typography(AdjustCaps(NoRule(Detag(block)))+' '))
 
 #-- Utility functions for text transformation
 def AdjustCaps(txt):

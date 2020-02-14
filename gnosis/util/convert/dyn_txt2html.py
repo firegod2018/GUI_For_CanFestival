@@ -1,5 +1,5 @@
-from dmTxt2Html import *     # Import the body of 'Txt2Html' code
-from urllib import urlopen
+from .dmTxt2Html import *     # Import the body of 'Txt2Html' code
+from urllib.request import urlopen
 import sys
 
 # Check for updated functions (fail gracefully if not fetchable)
@@ -13,7 +13,7 @@ except:
 
 # Import the updated functions (if available)
 try:
-    from t2h_textfuncs import *
+    from .t2h_textfuncs import *
 except:
     sys.stderr.write('Cannot import the updated Txt2Html functions')
 
@@ -22,7 +22,7 @@ if len(sys.argv) >= 2:
     cfg_dict = ParseArgs(sys.argv[1:])
     main(cfg_dict)
 else:
-    print "Please specify URL (and options) for Txt2Html conversion"
+    print("Please specify URL (and options) for Txt2Html conversion")
 
 
 

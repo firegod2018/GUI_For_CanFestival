@@ -19,7 +19,7 @@ from gnosis.util.XtoY import to_number
 
 import sys, os, string
 from types import *
-from StringIO import StringIO
+from io import StringIO
 
 # Define exceptions and flags
 XMLPicklingError = "gnosis.xml.pickle.XMLPicklingError"
@@ -29,7 +29,7 @@ DEBUG = 0
 
 def dbg(msg,force=0):
     if DEBUG or force:
-        print msg
+        print(msg)
 
 class _EmptyClass: pass
 
@@ -64,12 +64,12 @@ class xmlpickle_handler(ContentHandler):
     def prstk(self,force=0):
         if DEBUG == 0 and not force:
             return
-        print "**ELEM STACK**"
+        print("**ELEM STACK**")
         for i in self.elem_stk:
-            print str(i)
-        print "**VALUE STACK**"
+            print(str(i))
+        print("**VALUE STACK**")
         for i in self.val_stk:
-            print str(i)
+            print(str(i))
 
     def save_obj_id(self,obj,elem):
 
@@ -111,7 +111,7 @@ class xmlpickle_handler(ContentHandler):
         # call __init__ if initargs exist
         args = self.pop_initargs()
         if hasattr(obj,'__init__') and args is not None:
-            apply(obj.__init__,args)
+            obj.__init__(*args)
 
         # get stateinfo if exists
         state = self.pop_stateinfo()
@@ -201,8 +201,7 @@ class xmlpickle_handler(ContentHandler):
                                               elem[4].get('module'),
                                               self.paranoia)
                 else:
-                    raise XMLUnpicklingError, \
-                          "Unknown lang type %s" % elem[2]
+                    raise XMLUnpicklingError("Unknown lang type %s" % elem[2])
                 
             elif family == 'uniq':
                 # uniq is a special type - we don't know how to unpickle
@@ -225,12 +224,10 @@ class xmlpickle_handler(ContentHandler):
                 elif elem[2] == 'False':
                     obj = FALSE_VALUE
                 else:
-                    raise XMLUnpicklingError, \
-                          "Unknown uniq type %s" % elem[2]
+                    raise XMLUnpicklingError("Unknown uniq type %s" % elem[2])
             else:
-                raise XMLUnpicklingError, \
-                      "UNKNOWN family %s,%s,%s" % \
-                      (family,elem[2],elem[3])
+                raise XMLUnpicklingError("UNKNOWN family %s,%s,%s" % \
+                      (family,elem[2],elem[3]))
 
             # step 2 -- convert basic -> specific type
             # (many of these are NOPs, but included for clarity)
@@ -286,8 +283,7 @@ class xmlpickle_handler(ContentHandler):
 
             else:
                 self.prstk(1)
-                raise XMLUnpicklingError, \
-                      "UNHANDLED elem %s"%elem[2]
+                raise XMLUnpicklingError("UNHANDLED elem %s"%elem[2])
 
             # push on stack and save obj ref
             self.val_stk.append((elem[0],elem[3],obj))
@@ -328,7 +324,7 @@ class xmlpickle_handler(ContentHandler):
 
     def endDocument(self):
         if DEBUG == 1:
-            print "NROBJS "+str(self.nr_objs)
+            print("NROBJS "+str(self.nr_objs))
 
     def startElement(self,name,attrs):
         dbg("** START ELEM %s,%s"%(name,attrs._attrs))
@@ -406,17 +402,17 @@ class xmlpickle_handler(ContentHandler):
 
     # implement the ErrorHandler interface here as well
     def error(self,exception):
-        print "** ERROR - dumping stacks"
+        print("** ERROR - dumping stacks")
         self.prstk(1)
         raise exception
 
     def fatalError(self,exception):
-        print "** FATAL ERROR - dumping stacks"
+        print("** FATAL ERROR - dumping stacks")
         self.prstk(1)
         raise exception
 
     def warning(self,exception):
-        print "WARNING"
+        print("WARNING")
         raise exception
 
     # Implement EntityResolver interface (called when the parser runs
@@ -435,7 +431,7 @@ class xmlpickle_handler(ContentHandler):
 def thing_from_sax(filehandle=None,paranoia=1):
 
     if DEBUG == 1:
-        print "**** SAX PARSER ****"
+        print("**** SAX PARSER ****")
 
     e = ExpatParser()
     m = xmlpickle_handler(paranoia)

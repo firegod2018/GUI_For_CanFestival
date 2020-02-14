@@ -68,7 +68,7 @@ class XML_Indexer(indexer.PreferredIndexer, indexer.TextSplitter):
             if not py_obj:      # Fallback to DOM where Expat has problems
                 raise "BadPaserError"
                 py_obj = XML_Objectify(fname, DOM).make_instance()
-            if self.quiet < 5: print "Indexing", fname
+            if self.quiet < 5: print("Indexing", fname)
         except IOError:
             return 0
         self.fname_prefix = fname
@@ -79,8 +79,8 @@ class XML_Indexer(indexer.PreferredIndexer, indexer.TextSplitter):
         if hasattr(currnode, '_XML'):   # maybe present literal XML of object
             text = currnode._XML.encode('UTF-8')
             self.add_nodetext(text, xpath_suffix)
-        elif not isinstance(currnode, unicode):	       # Uche fix
-            for membname in currnode.__dict__.keys():
+        elif not isinstance(currnode, str):	       # Uche fix
+            for membname in list(currnode.__dict__.keys()):
                 if membname in ("__parent__","_seq"):  # ditto, Uche
                    continue     # ExpatFactory uses bookeeping attributes
                 member = getattr(currnode, membname)
@@ -106,8 +106,7 @@ class XML_Indexer(indexer.PreferredIndexer, indexer.TextSplitter):
                         self.add_nodetext(member.encode('UTF-8'),
                                           xpath_suffix.encode('UTF-8'))
                 else:
-                    raise TypeError, \
-                          "Unsupported Node Type: "+`type(member)`+`member`
+                    raise TypeError("Unsupported Node Type: "+repr(type(member))+repr(member))
 
     def add_nodetext(self, text, xpath_suffix):
         "Add the node PCDATA to index, using full XPATH to node as key"
@@ -122,11 +121,11 @@ class XML_Indexer(indexer.PreferredIndexer, indexer.TextSplitter):
         self.fileids[node_index] = node_id
 
         for word in words:
-            if self.words.has_key(word):
+            if word in self.words:
                 entry = self.words[word]
             else:
                 entry = {}
-            if entry.has_key(node_index):
+            if node_index in entry:
                 entry[node_index] = entry[node_index]+1
             else:
                 entry[node_index] = 1
@@ -137,7 +136,7 @@ if __name__ == '__main__':
     import os,sys
     if len(sys.argv)>=2:
         if sys.argv[1] in ('-h','/h','-?','/?','?','--help'):   # help screen
-            print __shell_usage__
+            print(__shell_usage__)
         else:
             ndx = XML_Indexer()
             ndx.load_index()

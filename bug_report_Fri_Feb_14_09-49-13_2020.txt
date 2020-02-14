@@ -1,0 +1,54 @@
+app-title:
+objdictedit
+
+app-version:
+$Revision: 1.48 $
+
+cwd:
+D:\XT\paperlib\CAN\tst
+
+date:
+Fri Feb 14 09:49:13 2020
+
+e-type:
+<class 'NameError'>
+
+e-value:
+name 'dump' is not defined
+
+locals:
+    self: <nodemanager.NodeManager object at 0x0000000005246288>
+    filepath: 'D:\\XT\\paperlib\\CAN\\tst\\objedit2.od'
+    file: <_io.TextIOWrapper name='D:\\XT\\paperlib\\CAN\\tst\\objedit2.od' mode='w' encoding='cp936'>
+
+platform:
+Windows-7-6.1.7601-SP1
+
+python-version:
+3.7.5
+
+self:
+    LastNewIndex: 1
+    FilePaths: {1: ''}
+    FileNames: {1: 'Î´ÃüÃû1'}
+    NodeIndex: 1
+    CurrentNode: <node.Node object at 0x0000000005263D48>
+    UndoBuffers: {1: <nodemanager.UndoBuffer object at 0x0000000005268908>}
+
+traceback:
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 604, in OnSaveMenu
+    self.Save()
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 612, in Save
+    self.SaveAs()
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\objdictedit.py", line 630, in SaveAs
+    result = self.Manager.SaveCurrentInFile(filepath)
+  File "D:\XT\paperlib\CAN\Mongo-canfestival-3-asc-1a25f5151a8d\objdictgen\nodemanager.py", line 302, in SaveCurrentInFile
+    dump(self.CurrentNode, file)
+<class 'NameError'>: name 'dump' is not defined
+
+wx-platform:
+__WXMSW__
+
+wx-version:
+4.0.7.post2
+

@@ -164,7 +164,7 @@ import string, re, os, fnmatch, sys, copy, gzip
 from types import *
 
 #-- Silly "do nothing" default recursive file processor
-def echo_fname(fname): print fname
+def echo_fname(fname): print(fname)
 
 #-- "Recurse and process files" utility function
 def recurse_files(curdir, pattern, exclusions, func=echo_fname, *args, **kw):
@@ -187,7 +187,7 @@ def recurse_files(curdir, pattern, exclusions, func=echo_fname, *args, **kw):
                 files.append(fname)
 
     for fname in files:
-        apply(func, (fname,)+args)
+        func(*(fname,)+args)
     for subdir in subdirs:
         recurse_files(subdir, pattern, exclusions, func, level=level+1)
 
@@ -201,15 +201,15 @@ class Index:
 #-- "Split plain text into words" utility function
 class TextSplitter:
     def initSplitter(self):
-        prenum  = string.join(map(chr, range(0,48)), '')
-        num2cap = string.join(map(chr, range(58,65)), '')
-        cap2low = string.join(map(chr, range(91,97)), '')
-        postlow = string.join(map(chr, range(123,256)), '')
+        prenum  = string.join(list(map(chr, list(range(0,48)))), '')
+        num2cap = string.join(list(map(chr, list(range(58,65)))), '')
+        cap2low = string.join(list(map(chr, list(range(91,97)))), '')
+        postlow = string.join(list(map(chr, list(range(123,256)))), '')
         nonword = prenum + num2cap + cap2low + postlow
         self.word_only = string.maketrans(nonword, " "*len(nonword))
-        self.nondigits = string.join(map(chr, range(0,48)) + map(chr, range(58,255)), '')
-        self.alpha = string.join(map(chr, range(65,91)) + map(chr, range(97,123)), '')
-        self.ident = string.join(map(chr, range(256)), '')
+        self.nondigits = string.join(list(map(chr, list(range(0,48)))) + list(map(chr, list(range(58,255)))), '')
+        self.alpha = string.join(list(map(chr, list(range(65,91)))) + list(map(chr, list(range(97,123)))), '')
+        self.ident = string.join(list(map(chr, list(range(256)))), '')
         self.init = 1
 
     def splitter(self, text, ftype):
@@ -330,7 +330,7 @@ class  ZopeTextSplitter:
     def splitter(self, text, ftype):
         """never case-sensitive"""
         if not hasattr(self,'init'): self.initSplitter()
-        return filter(self.goodword, self.splitterobj(text, self.stop_word_dict))
+        return list(filter(self.goodword, self.splitterobj(text, self.stop_word_dict)))
 
 
 #-- "Abstract" parent class for inherited indexers
@@ -338,7 +338,7 @@ class  ZopeTextSplitter:
 
 class GenericIndexer:
     def __init__(self, **kw):
-        apply(self.configure, (), kw)
+        self.configure(*(), **kw)
 
     def whoami(self):
         return self.__class__.__name__
@@ -363,11 +363,11 @@ class GenericIndexer:
 
     def add_file(self, fname, ftype='text/plain'):
         "Index the contents of a regular file"
-        if self.files.has_key(fname):   # Is file eligible for (re)indexing?
+        if fname in self.files:   # Is file eligible for (re)indexing?
             if self.reindex:            # Reindexing enabled, cleanup dicts
                 self.purge_entry(fname, self.fileids, self.files, self.words)
             else:                   # DO NOT reindex this file
-                if self.quiet < 5: print "Skipping", fname
+                if self.quiet < 5: print("Skipping", fname)
                 return 0
 
         # Read in the file (if possible)
@@ -376,7 +376,7 @@ class GenericIndexer:
                 text = gzip.open(fname).read()
             else:
                 text = open(fname).read()
-            if self.quiet < 5: print "Indexing", fname
+            if self.quiet < 5: print("Indexing", fname)
         except IOError:
             return 0
         words = self.splitter(text, ftype)
@@ -390,13 +390,13 @@ class GenericIndexer:
 
         filedict = {}
         for word in words:
-            if filedict.has_key(word):
+            if word in filedict:
                 filedict[word] = filedict[word]+1
             else:
                 filedict[word] = 1
 
-        for word in filedict.keys():
-            if self.words.has_key(word):
+        for word in list(filedict.keys()):
+            if word in self.words:
                 entry = self.words[word]
             else:
                 entry = {}
@@ -431,8 +431,8 @@ class GenericIndexer:
             entries[word] = entry           #   of matching files
             if not entry:                   # Nothing for this one word (fail)
                 return 0
-            for fileid in hits.keys():      # Eliminate hits for every non-match
-                if not entry.has_key(fileid):
+            for fileid in list(hits.keys()):      # Eliminate hits for every non-match
+                if fileid not in entry:
                     del hits[fileid]
         if print_report:
             self.print_report(hits, wordlist, entries)
@@ -441,20 +441,20 @@ class GenericIndexer:
     def print_report(self, hits={}, wordlist=[], entries={}):
         # Figure out what to actually print (based on QUIET level)
         output = []
-        for fileid,fname in hits.items():
+        for fileid,fname in list(hits.items()):
             message = fname
             if self.quiet <= 3:
                 wordcount = self.files[fname][1]
                 matches = 0
-                countmess = '\n'+' '*13+`wordcount`+' words; '
+                countmess = '\n'+' '*13+repr(wordcount)+' words; '
                 for word in wordlist:
                     if not self.casesensitive:
                         word = string.upper(word)
                     occurs = entries[word][fileid]
                     matches = matches+occurs
-                    countmess = countmess +`occurs`+' '+word+'; '
+                    countmess = countmess +repr(occurs)+' '+word+'; '
                 message = string.ljust('[RATING: '
-                                       +`1000*matches/wordcount`+']',13)+message
+                                       +repr(1000*matches/wordcount)+']',13)+message
                 if self.quiet <= 2: message = message +countmess +'\n'
             if self.filter:     # Using an output filter
                 if fnmatch.fnmatch(message, self.filter):
@@ -463,9 +463,9 @@ class GenericIndexer:
                 output.append(message)
 
         if self.quiet <= 5:
-            print string.join(output,'\n')
-        sys.stderr.write('\n'+`len(output)`+' files matched wordlist: '+
-                         `wordlist`+'\n')
+            print(string.join(output,'\n'))
+        sys.stderr.write('\n'+repr(len(output))+' files matched wordlist: '+
+                         repr(wordlist)+'\n')
         return output
 
     def purge_entry(self, fname, file_ids, file_dct, word_dct):
@@ -477,8 +477,8 @@ class GenericIndexer:
         except KeyError:
             pass    # We'll assume we only encounter KeyError's
         # The much harder part, cleanup the word index
-        for word, occurs in word_dct.items():
-            if occurs.has_key(file_index):
+        for word, occurs in list(word_dct.items()):
+            if file_index in occurs:
                 del occurs[file_index]
                 word_dct[word] = occurs
 
@@ -560,12 +560,12 @@ class FlatIndexer(GenericIndexer, TextSplitter):
         INDEXDB = INDEXDB or self.indexdb
         tab, lf, sp = '\t','\n',' '
         indexdb = open(INDEXDB,'w')
-        for fname,entry in self.files.items():
-            indexdb.write('- '+fname +tab +`entry[0]` +tab +`entry[1]` +lf)
-        for word,entry in self.words.items():
+        for fname,entry in list(self.files.items()):
+            indexdb.write('- '+fname +tab +repr(entry[0]) +tab +repr(entry[1]) +lf)
+        for word,entry in list(self.words.items()):
             indexdb.write(word +tab+tab)
-            for fileid,occurs in entry.items():
-                indexdb.write(`fileid` +sp +`occurs` +sp)
+            for fileid,occurs in list(entry.items()):
+                indexdb.write(repr(fileid) +sp +repr(occurs) +sp)
             indexdb.write(lf)
 
 class PickleIndexer(GenericIndexer, TextSplitter):
@@ -573,20 +573,20 @@ class PickleIndexer(GenericIndexer, TextSplitter):
         # Unless reload is indicated, do not load twice
         if self.index_loaded() and not reload: return 0
         # Ok, now let's actually load it
-        import cPickle
+        import pickle
         INDEXDB = INDEXDB or self.indexdb
         try:
             pickle_str =  open(INDEXDB,'rb').read()
-            db = cPickle.loads(pickle_str)
+            db = pickle.loads(pickle_str)
         except:                     # New index
             db = Index({}, {'_TOP':(0,None)}, {})
         self.words, self.files, self.fileids = db.WORDS, db.FILES, db.FILEIDS
 
     def save_index(self, INDEXDB=None):
-        import cPickle
+        import pickle
         INDEXDB = INDEXDB or self.indexdb
         db = Index(self.words, self.files, self.fileids)
-        open(INDEXDB,'wb').write(cPickle.dumps(db, 1))
+        open(INDEXDB,'wb').write(pickle.dumps(db, 1))
 
 class XMLPickleIndexer(PickleIndexer):
     """Concrete Indexer utilizing XML for storage
@@ -622,21 +622,21 @@ class ZPickleIndexer(PickleIndexer):
         # Unless reload is indicated, do not load twice
         if self.index_loaded() and not reload: return 0
         # Ok, now let's actually load it
-        import cPickle, zlib
+        import pickle, zlib
         INDEXDB = INDEXDB or self.indexdb
         try:
             pickle_str =  zlib.decompress(open(INDEXDB+'!','rb').read())
-            db = cPickle.loads(pickle_str)
+            db = pickle.loads(pickle_str)
         except:                     # New index
             db = Index({}, {'_TOP':(0,None)}, {})
         self.words, self.files, self.fileids = db.WORDS, db.FILES, db.FILEIDS
 
     def save_index(self, INDEXDB=None):
-        import cPickle, zlib
+        import pickle, zlib
         INDEXDB = INDEXDB or self.indexdb
         db = Index(self.words, self.files, self.fileids)
         pickle_fh = open(INDEXDB+'!','wb')
-        pickle_fh.write(zlib.compress(cPickle.dumps(db, 1)))
+        pickle_fh.write(zlib.compress(pickle.dumps(db, 1)))
 
 
 class SlicedZPickleIndexer(ZPickleIndexer):
@@ -645,7 +645,7 @@ class SlicedZPickleIndexer(ZPickleIndexer):
         # Unless reload is indicated, do not load twice
         if self.index_loaded() and not reload: return 0
         # Ok, now let's actually load it
-        import cPickle, zlib
+        import pickle, zlib
         INDEXDB = INDEXDB or self.indexdb
         db = Index({}, {'_TOP':(0,None)}, {})
         # Identify the relevant word-dictionary segments
@@ -659,9 +659,9 @@ class SlicedZPickleIndexer(ZPickleIndexer):
         for segment in segments:
             try:
                 pickle_str = zlib.decompress(open(INDEXDB+segment,'rb').read())
-                dbslice = cPickle.loads(pickle_str)
+                dbslice = pickle.loads(pickle_str)
                 if dbslice.__dict__.get('WORDS'):   # If it has some words, add them
-                    for word,entry in dbslice.WORDS.items():
+                    for word,entry in list(dbslice.WORDS.items()):
                         db.WORDS[word] = entry
                 if dbslice.__dict__.get('FILES'):   # If it has some files, add them
                     db.FILES = dbslice.FILES
@@ -672,7 +672,7 @@ class SlicedZPickleIndexer(ZPickleIndexer):
         self.words, self.files, self.fileids = db.WORDS, db.FILES, db.FILEIDS
 
     def julienne(self, INDEXDB=None):
-        import cPickle, zlib
+        import pickle, zlib
         INDEXDB = INDEXDB or self.indexdb
         segments = self.segments       # all the (little) indexes
         for segment in segments:
@@ -682,13 +682,13 @@ class SlicedZPickleIndexer(ZPickleIndexer):
                 pass    # probably just nonexistent segment index file
         # First write the much simpler filename/fileid dictionaries
         dbfil = Index(None, self.files, self.fileids)
-        open(INDEXDB+'-','wb').write(zlib.compress(cPickle.dumps(dbfil,1)))
+        open(INDEXDB+'-','wb').write(zlib.compress(pickle.dumps(dbfil,1)))
         # The hard part is splitting the word dictionary up, of course
         letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         segdicts = {}                           # Need batch of empty dicts
         for segment in letters+'#':
             segdicts[segment] = {}
-        for word, entry in self.words.items():  # Split into segment dicts
+        for word, entry in list(self.words.items()):  # Split into segment dicts
             initchar = string.upper(word[0])
             if initchar in letters:
                 segdicts[initchar][word] = entry
@@ -696,7 +696,7 @@ class SlicedZPickleIndexer(ZPickleIndexer):
                 segdicts['#'][word] = entry
         for initchar in letters+'#':
             db = Index(segdicts[initchar], None, None)
-            pickle_str = cPickle.dumps(db, 1)
+            pickle_str = pickle.dumps(db, 1)
             pickle_fh = open(INDEXDB+initchar,'wb')
             pickle_fh.write(zlib.compress(pickle_str))
 
@@ -719,7 +719,7 @@ if __name__ == '__main__':
         ndx = PreferredIndexer()
         for opt in sys.argv[1:]:
             if opt in ('-h','/h','-?','/?','?','--help'):   # help screen
-                print __shell_usage__
+                print(__shell_usage__)
                 opts = -1
                 break
             elif opt[0] in '/-':                            # a switch!

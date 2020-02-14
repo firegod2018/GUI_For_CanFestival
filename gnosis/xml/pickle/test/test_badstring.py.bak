@@ -13,76 +13,76 @@ class Foo:
     def __init__(self,s):
         self.s = s
 
-class WeirdUni(unicode):
+class WeirdUni(str):
     def __init__(self,s):
-        unicode.__init__(self,s)
+        str.__init__(self,s)
 
 # show that I didn't screw up normal strings
 f = Foo('OK')
 x = xml_pickle.dumps(f)
 o = xml_pickle.loads(x)
-print o.s, type(o.s)
+print(o.s, type(o.s))
 
-f = Foo(u'OK')
+f = Foo('OK')
 x = xml_pickle.dumps(f)
 o = xml_pickle.loads(x)
-print o.s, type(o.s)
+print(o.s, type(o.s))
 
-f = Foo(WeirdUni(u'OK'))
+f = Foo(WeirdUni('OK'))
 x = xml_pickle.dumps(f)
 o = xml_pickle.loads(x)
-print o.s, type(o.s)
+print(o.s, type(o.s))
 
 # pickler should catch all these unpickleable cases.
 # (to be fixed in gnosis 1.2.x)
 
 try:
     # Unicode string that contains our special string escape    
-    f = Foo(u'\xbb\xbbABC\xab\xab')
+    f = Foo('\xbb\xbbABC\xab\xab')
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
     
 try:
     # Unicode string that contains our special string escape    
-    f = Foo(WeirdUni(u'\xbb\xbbABC\xab\xab'))
+    f = Foo(WeirdUni('\xbb\xbbABC\xab\xab'))
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
         
 try:
     # Unicode string that contains our special string escape    
-    f = Foo({'a':u'\xbb\xbbABC\xab\xab'})
+    f = Foo({'a':'\xbb\xbbABC\xab\xab'})
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
         
 try:
     # Unicode string that contains our special string escape
-    f = Foo({'a':WeirdUni(u'\xbb\xbbABC\xab\xab')})
+    f = Foo({'a':WeirdUni('\xbb\xbbABC\xab\xab')})
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
     
 try:
     # illegal Unicode value for an XML file 
-    f = Foo(u'\ud800')
+    f = Foo('\ud800')
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
     
 try:
     # illegal Unicode value for an XML file
-    f = Foo(WeirdUni(u'\ud800'))
+    f = Foo(WeirdUni('\ud800'))
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
     
 try:
     # safe_content assumes it can always convert the string
@@ -91,9 +91,9 @@ try:
     setInBody(StringType, 1)
     f = Foo('\xed\xa0\x80')
     x = xml_pickle.dumps(f)
-    print "************* ERROR *************"
-except Exception,exc:
-    print "OK  <%s>" % str(exc)
+    print("************* ERROR *************")
+except Exception as exc:
+    print("OK  <%s>" % str(exc))
     
 
 

@@ -1,11 +1,11 @@
 "Test mxDateTime pickling --fpm"
 
 import mx.DateTime as date
-import UserList, UserDict
+import collections, UserDict
 from types import *
 import gnosis.xml.pickle as xml_pickle
 from gnosis.xml.pickle.util import setParanoia
-import funcs
+from . import funcs
 
 funcs.set_parser()
 
@@ -19,12 +19,12 @@ def testfoo(o1,o2):
             raise "ERROR(1)"
         
 def printfoo(obj):
-    print type(obj.t), obj.t
-    print type(obj.d), obj.d['One'], obj.d['Two']
-    print type(obj.ud), obj.ud['One'], obj.ud['Two']
-    print type(obj.l), obj.l[0], obj.l[1]
-    print type(obj.ul), obj.ul[0], obj.ul[1]
-    print type(obj.tup), obj.tup[0], obj.tup[1]
+    print(type(obj.t), obj.t)
+    print(type(obj.d), obj.d['One'], obj.d['Two'])
+    print(type(obj.ud), obj.ud['One'], obj.ud['Two'])
+    print(type(obj.l), obj.l[0], obj.l[1])
+    print(type(obj.ul), obj.ul[0], obj.ul[1])
+    print(type(obj.tup), obj.tup[0], obj.tup[1])
 
 #print locals()['foo_class'].__module__
 #print type(locals()['foo_class'])
@@ -51,7 +51,7 @@ foo.l = []
 foo.l.append( date.DateTime(2005,6,7,8,9,10.11) )
 foo.l.append( date.DateTime(2006,7,8,9,10,11.12) )
 
-foo.ul = UserList.UserList()
+foo.ul = collections.UserList()
 foo.ul.append( date.DateTime(2007,8,9,10,11,12.13) )
 foo.ul.append( date.DateTime(2008,9,10,11,12,13.14) )
 
@@ -78,7 +78,7 @@ x2 = xml_pickle.dumps(bar)
 #print "---XML from copy---"
 #print x2
 
-print "** OK **"
+print("** OK **")
 
 
 

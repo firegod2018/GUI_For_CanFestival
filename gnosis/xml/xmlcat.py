@@ -14,7 +14,7 @@ class Canonicalize(handler.ContentHandler):
         pass # sys.stderr.write("Bye bye!\n")
     def startElement(self, name, attrs):
         self._out.write('<' + name)
-        name_val = attrs.items()
+        name_val = list(attrs.items())
         name_val.sort()                 # canonicalize attributes
         for (name, value) in name_val:
             self._out.write(' %s="%s"' % (name, escape(value)))
@@ -41,7 +41,7 @@ class TextDump(handler.ContentHandler):
                 self._out.write('\n')
                 self.skipping = 0
             self._out.write(escape(content))
-        elif self.last == '\n' and content <> '\n':
+        elif self.last == '\n' and content != '\n':
             self._out.write(content)
         else:
             self.skipping = 1

@@ -4,5 +4,5 @@ Requires: Python 2.2+
 (may use new-style classes, slots, properties, metaclasses)
 """
 
-from _validity import *
+from ._validity import *
 

@@ -53,8 +53,8 @@ BOOL_TRANSLATE = {True : "1", False : "0"}
 ACCESS_TRANSLATE = {"RO" : "ro", "WO" : "wo", "RW" : "rw", "RWR" : "rw", "RWW" : "rw", "CONST" : "ro"}
 
 # Function for verifying data values
-is_integer = lambda x: type(x) in (IntType, LongType)
-is_string = lambda x: type(x) in (StringType, UnicodeType)
+is_integer = lambda x: type(x) in (int, int)
+is_string = lambda x: type(x) in (bytes, str)
 is_boolean = lambda x: x in (0, 1)
 
 # Define checking of value for each attribute
@@ -64,7 +64,7 @@ ENTRY_ATTRIBUTES = {"SUBNUMBER" : is_integer,
                     "DATATYPE" : is_integer, 
                     "LOWLIMIT" : is_integer, 
                     "HIGHLIMIT" : is_integer,
-                    "ACCESSTYPE" : lambda x: x.upper() in ACCESS_TRANSLATE.keys(),
+                    "ACCESSTYPE" : lambda x: x.upper() in list(ACCESS_TRANSLATE.keys()),
                     "DEFAULTVALUE" : lambda x: True, 
                     "PDOMAPPING" : is_boolean,
                     "OBJFLAGS" : is_integer, 
@@ -207,21 +207,21 @@ def ParseCPJFile(filepath):
                             if not is_boolean(computed_value):
                                 raise SyntaxError( _("Invalid value \"%s\" for keyname \"%s\" of section \"[%s]\"")%(value, keyname, section_name))
                             nodeid = int(nodepresent_result.groups()[0])
-                            if nodeid not in topology["Nodes"].keys():
+                            if nodeid not in list(topology["Nodes"].keys()):
                                 topology["Nodes"][nodeid] = {}
                             topology["Nodes"][nodeid]["Present"] = computed_value
                         elif nodename_result:
                             if not is_string(value):
                                 raise SyntaxError( _("Invalid value \"%s\" for keyname \"%s\" of section \"[%s]\"")%(value, keyname, section_name))
                             nodeid = int(nodename_result.groups()[0])
-                            if nodeid not in topology["Nodes"].keys():
+                            if nodeid not in list(topology["Nodes"].keys()):
                                 topology["Nodes"][nodeid] = {}
                             topology["Nodes"][nodeid]["Name"] = computed_value
                         elif nodedcfname_result:
                             if not is_string(computed_value):
                                 raise SyntaxError( _("Invalid value \"%s\" for keyname \"%s\" of section \"[%s]\"")%(value, keyname, section_name))
                             nodeid = int(nodedcfname_result.groups()[0])
-                            if nodeid not in topology["Nodes"].keys():
+                            if nodeid not in list(topology["Nodes"].keys()):
                                 topology["Nodes"][nodeid] = {}
                             topology["Nodes"][nodeid]["DCFName"] = computed_value
                         else:
@@ -231,14 +231,14 @@ def ParseCPJFile(filepath):
                 elif assignment.strip() != "":
                     raise SyntaxError( _("\"%s\" is not a valid CPJ line")%assignment.strip())
         
-            if "Number" not in topology.keys():
+            if "Number" not in list(topology.keys()):
                 raise SyntaxError( _("\"Nodes\" keyname in \"[%s]\" section is missing")%section_name)
         
             if topology["Number"] != len(topology["Nodes"]):
                 raise SyntaxError( _("\"Nodes\" value not corresponding to number of nodes defined"))
             
-            for nodeid, node in topology["Nodes"].items():
-                if "Present" not in node.keys():
+            for nodeid, node in list(topology["Nodes"].items()):
+                if "Present" not in list(node.keys()):
                     raise SyntaxError( _("\"Node%dPresent\" keyname in \"[%s]\" section is missing")%(nodeid, section_name))
             
             networks.append(topology)
@@ -284,7 +284,7 @@ def ParseEDSFile(filepath):
             if index not in eds_dict:
                 eds_dict[index] = values
                 eds_dict[index]["subindexes"] = {}
-            elif eds_dict[index].keys() == ["subindexes"]:
+            elif list(eds_dict[index].keys()) == ["subindexes"]:
                 values["subindexes"] = eds_dict[index]["subindexes"]
                 eds_dict[index] = values
             else:
@@ -409,7 +409,7 @@ def VerifyValue(values, section_name, param):
             elif values["DATATYPE"] == 0x01:
                 values[param.upper()] = {0 : False, 1 : True}[values[param.upper()]]
             else:
-                if not isinstance(values[param.upper()], (IntType, LongType)) and values[param.upper()].upper().find("$NODEID") == -1:
+                if not isinstance(values[param.upper()], (int, int)) and values[param.upper()].upper().find("$NODEID") == -1:
                     raise
         except:
             raise SyntaxError( _("Error on section \"[%s]\":\n%s incompatible with DataType")%(section_name, param))
@@ -531,7 +531,7 @@ def GenerateFileContent(Node, filepath):
         # Define section name
         text = "\n[%X]\n"%entry
         # If there is only one value, it's a VAR entry
-        if type(values) != ListType:
+        if type(values) != list:
             # Extract the informations of the first subindex
             subentry_infos = Node.GetSubentryInfos(entry, 0)
             # Generate EDS informations for the entry
@@ -641,7 +641,7 @@ def GenerateEDSFile(filepath, node):
     
 # Function that generate the CPJ file content for the nodelist
 def GenerateCPJContent(nodelist):
-    nodes = nodelist.SlaveNodes.keys()
+    nodes = list(nodelist.SlaveNodes.keys())
     nodes.sort()
     
     fileContent = "[TOPOLOGY]\n"
@@ -674,14 +674,14 @@ def GenerateNode(filepath, nodeID = 0):
             if os.path.isfile(ProfilePath):
                 try:
                     # Load Profile
-                    execfile(ProfilePath)
+                    exec(compile(open(ProfilePath, "rb").read(), ProfilePath, 'exec'))
                     Node.SetProfileName(ProfileName)
                     Node.SetProfile(Mapping)
                     Node.SetSpecificMenu(AddMenuEntries)
                 except:
                     pass
         # Read all entries in the EDS dictionary 
-        for entry, values in eds_dict.items():
+        for entry, values in list(eds_dict.items()):
             # All sections with a name in keynames are escaped
             if entry in SECTION_KEYNAMES:
                 pass
@@ -713,7 +713,7 @@ def GenerateNode(filepath, nodeID = 0):
                         # Add mapping for first subindex
                         Node.AddMappingEntry(entry, 0, values = {"name" : "Number of Entries", "type" : 0x05, "access" : "ro", "pdo" : False})
                         # Add mapping for other subindexes
-                        for subindex in xrange(1, int(max_subindex) + 1):
+                        for subindex in range(1, int(max_subindex) + 1):
                             # if subindex is defined
                             if subindex in values["subindexes"]:
                                 Node.AddMappingEntry(entry, subindex, values = {"name" : values["subindexes"][subindex]["PARAMETERNAME"], 
@@ -763,7 +763,7 @@ def GenerateNode(filepath, nodeID = 0):
                         max_subindex = max(values["subindexes"].keys())
                         Node.AddEntry(entry, value = [])
                         # Define value for all subindexes except the first 
-                        for subindex in xrange(1, int(max_subindex) + 1):
+                        for subindex in range(1, int(max_subindex) + 1):
                             # Take default value if it is defined and entry is defined
                             if subindex in values["subindexes"] and "PARAMETERVALUE" in values["subindexes"][subindex]:
                                 value = values["subindexes"][subindex]["PARAMETERVALUE"]
@@ -784,5 +784,5 @@ def GenerateNode(filepath, nodeID = 0):
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    print(ParseEDSFile("examples/PEAK MicroMod.eds"))
+    print((ParseEDSFile("examples/PEAK MicroMod.eds")))
 

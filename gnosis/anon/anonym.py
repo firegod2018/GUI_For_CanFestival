@@ -1,7 +1,7 @@
 #!/home/gnosis/bin/python
 
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-from encode_address import address_like, read_encoding,\
+from xmlrpc.server import SimpleXMLRPCServer
+from .encode_address import address_like, read_encoding,\
                            encrypt, ascii_huffman_encode,\
                            decrypt, ascii_huffman_decode
 KEYFILE = '/home/gnosis/.anonym_passphrase'

@@ -1,5 +1,6 @@
 import curses, traceback, string, os
-import dmTxt2Html
+from . import dmTxt2Html
+import importlib
 
 #-- Define the appearance of some interface elements
 hotkey_attr = curses.A_BOLD | curses.A_UNDERLINE
@@ -48,7 +49,7 @@ def topbar_key_handler(key_assign=None, key_dict={}):
         c = screen.getch()
         if c in (curses.KEY_END, ord('!')):
             return 0
-        elif c not in key_dict.keys():
+        elif c not in list(key_dict.keys()):
             curses.beep()
             return 1
         else:
@@ -88,7 +89,7 @@ def update_txt2html():
     s.addstr(3, 2, "...downloading...")
     s.refresh()
     try:
-        from urllib import urlopen
+        from urllib.request import urlopen
         updates = urlopen('http://gnosis.cx/download/dmTxt2Html.py').read()
         fh = open('dmTxt2Html.py', 'w')
         fh.write(updates)
@@ -96,7 +97,7 @@ def update_txt2html():
         s.addstr(3, 2, "Module [dmTxt2Html] downloaded to current directory")
     except:
         s.addstr(3, 2,  "Download of updated [dmTxt2Html] module failed!")
-    reload(dmTxt2Html)
+    importlib.reload(dmTxt2Html)
     s.addstr(4, 2, "Module [dmTxt2Html] reloaded from current directory  ")
     s.refresh()
     c = s.getch()

@@ -80,7 +80,7 @@ def doit3():
     x = xml_pickle.dumps(f)
     print(x)
     g = thing_from_sax2(None,x)
-    print(f.u, f.r.pattern, f.r2.pattern)
+    print((f.u, f.r.pattern, f.r2.pattern))
 
 def doit2():
     u = UserList([1,2,[(3,4,5),(6,7,8)],3,UserList([0,1,2]),4])
@@ -98,15 +98,15 @@ def doit(deepcopy=1):
     fh = open('aaa.xml','w')
     x = xml_pickle.dump(f,fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
-    print("Pickle len = ",os.stat('aaa.xml')[ST_SIZE])
+    print(("TIME = %f"%(time()-t1)))
+    print(("Pickle len = ",os.stat('aaa.xml')[ST_SIZE]))
 
     print("minidom pure parse")
     t1 = time()
     fh = open('aaa.xml','r')
     #minidom.parse(fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
+    print(("TIME = %f"%(time()-t1)))
 
     print("DOM load")
     t1 = time()
@@ -114,7 +114,7 @@ def doit(deepcopy=1):
     xml_pickle.setParser("DOM") # default, but just to be sure
     #o = xml_pickle.load(fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
+    print(("TIME = %f"%(time()-t1)))
     #del o
 
     print("SAX load")
@@ -123,7 +123,7 @@ def doit(deepcopy=1):
     xml_pickle.setParser("SAX")
     m = xml_pickle.load(fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
+    print(("TIME = %f"%(time()-t1)))
     del m
 
     print("cEXPAT load")
@@ -132,7 +132,7 @@ def doit(deepcopy=1):
     xml_pickle.setParser("cEXPAT")
     #m = xml_pickle.load(fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
+    print(("TIME = %f"%(time()-t1)))
     #del m
 
 def pyxml_marshal():
@@ -149,15 +149,15 @@ def pyxml_marshal():
     fh = open('bbb.xml','w')
     x = generic.dump(f,fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
-    print("Pickle len = ",os.stat('bbb.xml')[ST_SIZE])
+    print(("TIME = %f"%(time()-t1)))
+    print(("Pickle len = ",os.stat('bbb.xml')[ST_SIZE]))
 
     print("xml.marshal load")
     t1 = time()
     fh = open('bbb.xml','r')
     m = generic.load(fh)
     fh.close()
-    print("TIME = %f"%(time()-t1))
+    print(("TIME = %f"%(time()-t1)))
     del m
 
 pyxml_marshal()

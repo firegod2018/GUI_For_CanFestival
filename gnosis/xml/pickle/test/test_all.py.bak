@@ -8,9 +8,9 @@ writes the output to TESTS.OUT-{pyversion}
 import os,sys,string
 from time import time
 from gnosis.xml.pickle.util import enumParsers
-import funcs
+from . import funcs
 import gnosis.pyconfig
-from funcs import unlink, touch
+from .funcs import unlink, touch
 
 # use same python that we're running under
 py = sys.executable
@@ -53,7 +53,7 @@ def echof(filename,line):
     f.write(line+'\n')
 
 def pechof(filename,line):
-    print line
+    print(line)
     if os.path.isfile(filename):
         f = open(filename,'a')
     else:
@@ -154,7 +154,7 @@ def check_harness():
             sys.exit(1)
 
     # known "fail" tests
-    print "***************** INGORE EXCEPTIONS BETWEEN THESE LINES *****************"	
+    print("***************** INGORE EXCEPTIONS BETWEEN THESE LINES *****************")	
     for bad in ['test_fail_exit.py','test_fail_raise_1.py',
                 'test_fail_raise_2.py','test_fail_raise_3.py']:
         r = os.system('%s %s %s' % (py,bad,outstr))
@@ -162,7 +162,7 @@ def check_harness():
             pechof(tout,"****** Harness test failed ******")
             sys.exit(1)
 
-    print "***************** INGORE EXCEPTIONS BETWEEN THESE LINES *****************"
+    print("***************** INGORE EXCEPTIONS BETWEEN THESE LINES *****************")
     
     unlink('harness_check.out')
 
@@ -178,7 +178,7 @@ pechof(tout,"Sanity check: OK")
 parser_dict = enumParsers()
 
 # test with DOM parser, if available
-if parser_dict.has_key('DOM'):
+if 'DOM' in parser_dict:
 
     # make sure the USE_.. files are gone
     unlink("USE_SAX")
@@ -187,7 +187,7 @@ if parser_dict.has_key('DOM'):
     t1 = time()
 
     for test in tests:
-        print "Running %s" % test
+        print("Running %s" % test)
         echof(tout,"** %s %s DOM PARSER **" % (py,test))
         r = os.system("%s %s >> %s"%(py,test,tout))
         if r != 0:
@@ -199,14 +199,14 @@ else:
     pechof(tout,"** SKIPPING DOM parser **")
 
 # test with SAX parser, if available
-if parser_dict.has_key("SAX"):
+if "SAX" in parser_dict:
 
     touch("USE_SAX")
 
     t1 = time()
 
     for test in tests:
-        print "Running %s" % test
+        print("Running %s" % test)
         echof(tout,"** %s %s SAX PARSER **" % (py,test))
         r = os.system("%s %s >> %s"%(py,test,tout))
         if r != 0:
@@ -220,14 +220,14 @@ else:
     pechof(tout,"** SKIPPING SAX parser **")
 
 # test with cEXPAT parser, if available
-if parser_dict.has_key("cEXPAT"):
+if "cEXPAT" in parser_dict:
 
     touch("USE_CEXPAT");
 
     t1 = time()
 
     for test in tests:
-        print "Running %s" % test
+        print("Running %s" % test)
         echof(tout,"** %s %s CEXPAT PARSER **" % (py,test))
         r = os.system("%s %s >> %s"%(py,test,tout))
         if r != 0:

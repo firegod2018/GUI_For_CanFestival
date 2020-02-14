@@ -210,18 +210,18 @@ f.u = UserList([1,2,3,4])
 f.m = mylist([5,6,7,8])
 f.z = zlist([9,10,11,12])
 
-print(f.u.__class__, f.u)
-print(f.m.__class__, f.m)
-print(f.z.__class__, f.z)
+print((f.u.__class__, f.u))
+print((f.m.__class__, f.m))
+print((f.z.__class__, f.z))
 
 x = xml_pickle.dumps(f)
 print(x)
 del f
 
 g = xml_pickle.loads(x)
-print(g.u.__class__, g.u)
-print(g.m.__class__, g.m)
-print(g.z.__class__, g.z)
+print((g.u.__class__, g.u))
+print((g.m.__class__, g.m))
+print((g.z.__class__, g.z))
 
 mutate.remove_mutator(my1)
 
@@ -272,14 +272,14 @@ f = foo()
 
 f.a = Numeric.array([[1,2,3,4],[5,6,7,8],[9,10,11,12]],'f')
 
-print("ORIG: ",f.a)
+print(("ORIG: ",f.a))
 
 x = xml_pickle.dumps(f)
 print(x)
 del f
 
 g = xml_pickle.loads(x)
-print("COPY: ",g.a)
+print(("COPY: ",g.a))
 
 mutate.remove_mutator(my1)
 
@@ -336,13 +336,13 @@ f = foo()
 
 f.a = mx.DateTime.now()
 
-print("ORIG: ",f.a)
+print(("ORIG: ",f.a))
 
 x = xml_pickle.dumps(f)
 print(x)
 del f
 
 g = xml_pickle.loads(x)
-print("COPY: ",g.a)
+print(("COPY: ",g.a))
 
 mutate.remove_mutator(my1)

@@ -187,7 +187,7 @@ if 'DOM' in parser_dict:
     t1 = time()
 
     for test in tests:
-        print("Running %s" % test)
+        print(("Running %s" % test))
         echof(tout,"** %s %s DOM PARSER **" % (py,test))
         r = os.system("%s %s >> %s"%(py,test,tout))
         if r != 0:
@@ -206,7 +206,7 @@ if "SAX" in parser_dict:
     t1 = time()
 
     for test in tests:
-        print("Running %s" % test)
+        print(("Running %s" % test))
         echof(tout,"** %s %s SAX PARSER **" % (py,test))
         r = os.system("%s %s >> %s"%(py,test,tout))
         if r != 0:
@@ -227,7 +227,7 @@ if "cEXPAT" in parser_dict:
     t1 = time()
 
     for test in tests:
-        print("Running %s" % test)
+        print(("Running %s" % test))
         echof(tout,"** %s %s CEXPAT PARSER **" % (py,test))
         r = os.system("%s %s >> %s"%(py,test,tout))
         if r != 0:

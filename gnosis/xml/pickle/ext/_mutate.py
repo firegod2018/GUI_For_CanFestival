@@ -15,7 +15,7 @@ _unmutators_by_tag = {}
 def __disable_extensions():
     global _mutators_by_classtype
     _mutators_by_classtype = {}
-    for tag in _unmutators_by_tag.keys():
+    for tag in list(_unmutators_by_tag.keys()):
         # rawpickle is always on -- we have to fallback on
         # it when everything else fails
         if tag != "rawpickle":
@@ -54,7 +54,7 @@ def get_mutator(obj):
     if not hasattr(obj,'__class__'):
         return None
 
-    if _has_coredata_cache.has_key(obj.__class__):
+    if obj.__class__ in _has_coredata_cache:
         return _has_coredata_cache[obj.__class__]
 
     if hasCoreData(obj):

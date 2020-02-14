@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, glob, gzip
-from trigramlib import generate_trigrams, interesting
+from .trigramlib import generate_trigrams, interesting
 
 MAX_PROBS = 100
 
@@ -22,7 +22,7 @@ def combine_probs(problist):
 def is_spam(text):
     trigram_probs = []
     for trigram in generate_trigrams(text):
-        if interesting.has_key(trigram):
+        if trigram in interesting:
             trigram_probs.append(interesting[trigram])
             #print trigram, trigrams[trigram]
         if len(trigram_probs) > MAX_PROBS: break
@@ -48,9 +48,9 @@ if __name__=='__main__':
             #print fname, spam_prob
             pass
 
-    print '='*72
-    print '-- Flagged:', flagged,
-    print '-- Total:', fcount,
-    print '-- Errors:', error,
-    print "-- %.2f percent spam" % ((100.0*flagged)/fcount)
+    print('='*72)
+    print('-- Flagged:', flagged, end=' ')
+    print('-- Total:', fcount, end=' ')
+    print('-- Errors:', error, end=' ')
+    print("-- %.2f percent spam" % ((100.0*flagged)/fcount))
 

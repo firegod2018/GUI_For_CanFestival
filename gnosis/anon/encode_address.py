@@ -45,7 +45,7 @@ def read_encoding(fname):
         flds = line.split()
         if len(flds)==3 and flds[2][0]==":":
             encmap[flds[1]] = tuple(map(int, flds[2][1:]))
-    decmap = dict([(bits,c) for (c,bits) in encmap.items()])
+    decmap = dict([(bits,c) for (c,bits) in list(encmap.items())])
     return encmap, decmap
 
 def ascii_huffman_encode(s, encmap, encrypt=lambda k,s:s, key=None):
@@ -82,7 +82,7 @@ def ascii_huffman_decode(enc, decmap, decrypt=lambda k,s:s, key=None):
     bits = string2bits(plain)
     decoded, head = [], 0
     for pos in range(len(bits)+1):
-        if decmap.has_key(tuple(bits[head:pos])):
+        if tuple(bits[head:pos]) in decmap:
             decoded.append(decmap[tuple(bits[head:pos])])
             head = pos
     return "".join(decoded)
@@ -98,12 +98,12 @@ if __name__=='__main__':
     encmap, decmap = read_encoding('huffman')
     plain, coded = 0,0
 
-    for addr in sys.stdin.xreadlines():
+    for addr in sys.stdin:
         addr = addr.strip().upper()
         enc_addr = ascii_huffman_encode(addr, encmap, encrypt, key)
-        if not address_like(addr): print addr
+        if not address_like(addr): print(addr)
         #print len(addr), len(enc_addr), addr, enc_addr
-        print ascii_huffman_decode(enc_addr, decmap, decrypt, key)
+        print(ascii_huffman_decode(enc_addr, decmap, decrypt, key))
         plain += len(addr)
         coded += len(enc_addr)
 

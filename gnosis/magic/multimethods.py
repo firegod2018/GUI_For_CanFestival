@@ -1,4 +1,5 @@
 "Multiple dispatch in Python with configurable dispatch resolution"
+from functools import reduce
 
 _AUTHOR=["David Mertz (mertz@gnosis.cx)",]
 _THANKS_TO=[
@@ -33,8 +34,8 @@ _HISTORY="""
 AT_START = -1   # names for when to run other matching methods
 SKIP     = 0
 AT_END   = 1
-if not globals().has_key('True'):  True = 1
-if not globals().has_key('False'): False = 0
+if 'True' not in globals():  True = 1
+if 'False' not in globals(): False = 0
 
 #-- Sample functions linearize match tables in various ways
 # 'signature' passed to each func is seq of classes in current call
@@ -52,17 +53,17 @@ def reverse_def(signature, matches):
 def unambiguous_lexicographic_mro(signature, matches):
     "Use dispatch ranking similar to Dylan"
     # I suppose this would need a topological sort
-    raise NotImplementedError, "Someone want to help?"
+    raise NotImplementedError("Someone want to help?")
 
 def lexicographic_mro(signature, matches):
     "Use dispatch ranking similar to CLOS"
     # Schwartzian transform to weight match sigs, left-to-right"
     proximity = lambda klass, mro: mro.index(klass)
     mros = [klass.mro() for klass in signature]
-    for (sig,func,nm),i in zip(matches,xrange(1000)):
-        matches[i] = (map(proximity, sig, mros), matches[i])
+    for (sig,func,nm),i in zip(matches,range(1000)):
+        matches[i] = (list(map(proximity, sig, mros)), matches[i])
     matches.sort()
-    return map(lambda t:t[1], matches)
+    return [t[1] for t in matches]
 
 def weighted_mro(signature, matches):
     "Use dispatch ranking similar to Perl Class::Multimethods"
@@ -71,10 +72,10 @@ def weighted_mro(signature, matches):
     proximity = lambda klass, mro: mro.index(klass)
     sum = lambda lst: reduce(add, lst)
     mros = [klass.mro() for klass in signature]
-    for (sig,func,nm),i in zip(matches,xrange(1000)):
+    for (sig,func,nm),i in zip(matches,range(1000)):
         matches[i] = (sum(map(proximity,sig,mros)), matches[i])
     matches.sort()
-    return map(lambda t:t[1], matches)
+    return [t[1] for t in matches]
 
 #-- Dispatch class
 class Dispatch(object):
@@ -129,17 +130,16 @@ class Dispatch(object):
 
     def linearize_table(self, sig):
         from operator import mul
-        len_match = lambda (s,f,nm): len(s) == len(sig)
-        typ_match = lambda (s,f,nm): reduce(mul, map(issubclass, sig, s))
+        len_match = lambda s_f_nm: len(s_f_nm[0]) == len(sig)
+        typ_match = lambda s_f_nm1: reduce(mul, list(map(issubclass, sig, s_f_nm1[0])))
         all_match = lambda x: len_match(x) and typ_match(x)
-        table = filter(all_match, self.table)
+        table = list(filter(all_match, self.table))
         if not table:
             def nomatch(*a):
-                raise TypeError, \
-                  "%s instance: no defined call signature <%s>" %\
-                   (self.__class__.__name__, ",".join(map(type, sig)))
+                raise TypeError("%s instance: no defined call signature <%s>" %\
+                   (self.__class__.__name__, ",".join(map(type, sig))))
             return [(nomatch,SKIP)]
-        return map(lambda l:l[1:], self.order(sig, table))
+        return [l[1:] for l in self.order(sig, table)]
 
 
 def beats_game():
@@ -159,26 +159,26 @@ def beats_game():
                      ])
     beats.order = weighted_mro
 
-    print "<rock, scissors>   ", beats(rock, scissors)
-    print "<paper, scissors>  ", beats(paper, scissors)
+    print("<rock, scissors>   ", beats(rock, scissors))
+    print("<paper, scissors>  ", beats(paper, scissors))
 
-    print "----- Add fire rule ------"
+    print("----- Add fire rule ------")
     class Fire(Thing): pass
     def firepower(a,b): return "Fire always wins!"
     beats.add_rule((Fire, Thing), firepower, AT_END)
     beats.add_rule((Thing, Fire), firepower, AT_END)
     fire = Fire()
 
-    print "<fire, rock>       ", beats(fire, rock)
-    print "<fire, paper>      ", beats(fire, paper)
-    print "<fire, fire>       ", beats(fire, fire)
-    print "<scissors, rock>   ", beats(scissors, rock)
+    print("<fire, rock>       ", beats(fire, rock))
+    print("<fire, paper>      ", beats(fire, paper))
+    print("<fire, fire>       ", beats(fire, fire))
+    print("<scissors, rock>   ", beats(scissors, rock))
 
-    print "---- Remove fire rule ----"
+    print("---- Remove fire rule ----")
     beats.remove_rule((Fire, Thing))
-    print "<fire, rock>       ", beats(fire, rock)
-    print "<fire, paper>      ", beats(fire, paper)
-    print "<scissors, rock>   ", beats(scissors, rock)
+    print("<fire, rock>       ", beats(fire, rock))
+    print("<fire, paper>      ", beats(fire, paper))
+    print("<scissors, rock>   ", beats(scissors, rock))
 
     #print beats(scissors, "") # Raises a TypeError
 
@@ -196,8 +196,8 @@ def auto_dispatch():
     dispatch.add_rule((General,), lambda _:"General", AT_END)
     dispatch.add_rule((Between,), lambda _:"Between", AT_END)
     dispatch.add_rule((Specific,), lambda _:"Specific", AT_END)
-    print dispatch(General())
-    print dispatch(Specific())
+    print(dispatch(General()))
+    print(dispatch(Specific()))
 
 def manual_dispatch():
     "Enable Dispatch.next_method() call within function bodies"
@@ -206,20 +206,20 @@ def manual_dispatch():
     class Specific(Between): pass
 
     def do_general(x, dispatch):
-        print "start general"
+        print("start general")
         return "-> general"
 
     def do_between(x, dispatch):
-        print "start between"
-        print dispatch.next_method()
-        print "still between"
+        print("start between")
+        print(dispatch.next_method())
+        print("still between")
         return "-> between"
 
     def do_specific(x, dispatch):
-        print "start specific"
-        print dispatch.next_method()
-        print "still specific"
-        print dispatch.next_method()    # same dispatch as prior call
+        print("start specific")
+        print(dispatch.next_method())
+        print("still specific")
+        print(dispatch.next_method())    # same dispatch as prior call
         return "-> specific"
 
     # Either specify Dispatch in .add_rule(), or use .add_dipatchable()
@@ -231,16 +231,16 @@ def manual_dispatch():
     o = Specific()
     x = multi.with_dispatch(o)
     # Or: multi(o, multi)
-    print x
+    print(x)
 
 def function_args():
     "Call a multimethod with (simulated) positional or keyword arguments"
     class Foo(object): pass
 
     def say_args(foo, args=(), kw={}):
-        print "Arguments:", args
-        print " Keywords:", kw
-        print "-"*72
+        print("Arguments:", args)
+        print(" Keywords:", kw)
+        print("-"*72)
 
     multi = Dispatch()
     multi.add_rule((Foo,), say_args)

@@ -98,11 +98,11 @@ def attr_dict(o, fillslots=0):
     else:
         raise TypeError( "Object has neither __dict__ nor __slots__")
 
-attr_keys = lambda o: attr_dict(o).keys()
-attr_vals = lambda o: attr_dict(o).values()
+attr_keys = lambda o: list(attr_dict(o).keys())
+attr_vals = lambda o: list(attr_dict(o).values())
 
 def attr_update(o,new):
-    for k,v in new.items():
+    for k,v in list(new.items()):
         setattr(o,k,v)
 
 def data2attr(o):

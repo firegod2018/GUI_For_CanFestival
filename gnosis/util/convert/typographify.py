@@ -5,7 +5,7 @@ from mx.TextTools import TextTools
 
 input = stdin.read()
 decl = open('typographify.def').read()
-from typo_html import codes
+from .typo_html import codes
 parser = generator.buildParser(decl).parserbyname('para')
 taglist = TextTools.tag(input, parser)
 for tag, beg, end, parts in taglist[1]:

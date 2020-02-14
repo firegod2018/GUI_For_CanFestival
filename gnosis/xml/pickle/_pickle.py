@@ -30,7 +30,7 @@ import gnosis.pyconfig
 from types import *
 
 try:		# Get a usable StringIO
-    from cStringIO import StringIO
+    from io import StringIO
 except:
     from io import StringIO
 
@@ -301,7 +301,7 @@ def pickle_instance(obj, list, level=0, deepcopy=0):
         if type(stuff) is DictType:
             # don't need it as a single object - save keys/vals as
             # first-level attributes
-            for key,val in stuff.items():
+            for key,val in list(stuff.items()):
                 list.append(_attr_tag(key, val, level, deepcopy))
         else:
             raise XMLPicklingError( \
@@ -486,7 +486,7 @@ def _tag_completer(start_tag, orig_thing, close_tag, level, deepcopy):
             # can't pickle unicode containing the special "escape" sequence
             # we use for putting strings in the XML body (they'll be unpickled
             # as strings, not unicode, if we do!)
-            if thing[0:2] == u'\xbb\xbb' and thing[-2:] == u'\xab\xab':
+            if thing[0:2] == '\xbb\xbb' and thing[-2:] == '\xab\xab':
                 raise Exception("Unpickleable Unicode value. To be fixed in next major Gnosis release.")
         
             # see if it contains any XML-illegal values
@@ -499,7 +499,7 @@ def _tag_completer(start_tag, orig_thing, close_tag, level, deepcopy):
             try:
                 # safe_content assumes it can always convert the string
                 # to unicode, which isn't true (eg. pickle a UTF-8 value)
-                u = unicode(thing)
+                u = str(thing)
             except:
                 raise Exception("Unpickleable string value (%s). To be fixed in next major Gnosis release." % repr(thing))
 
@@ -552,7 +552,7 @@ def _tag_completer(start_tag, orig_thing, close_tag, level, deepcopy):
         # need to remember we've seen container before pickling subitems
         visited[id(orig_thing)] = orig_thing
         if do_copy:
-            for key, val in thing.items():
+            for key, val in list(thing.items()):
                 tag_body.append(_entry_tag(key, val, level+1, deepcopy))
         else:
             close_tag = ''

@@ -113,7 +113,7 @@ def can_run_code( codestr ):
         return 1
     except Exception as exc:
         if SHOW_DEBUG_INFO:
-            print( "RUN EXC ",str(exc))
+            print(( "RUN EXC ",str(exc)))
             
         return 0
 
@@ -359,11 +359,11 @@ def Can_AssignDoc():
 
 def runtest(msg, test):
     r = test()
-    print("%-40s %s" % (msg,['no','yes'][r]))
+    print(("%-40s %s" % (msg,['no','yes'][r])))
 
 def runtest_1arg(msg, test, arg):
     r = test(arg)
-    print("%-40s %s" % (msg,['no','yes'][r]))
+    print(("%-40s %s" % (msg,['no','yes'][r])))
 
 if __name__ == '__main__':
 
@@ -372,12 +372,12 @@ if __name__ == '__main__':
     # show banner w/version
     try:
         v = sys.version_info
-        print("Python %d.%d.%d-%s [%s, %s]" % (v[0],v[1],v[2],str(v[3]),
-                                               os.name,sys.platform))
+        print(("Python %d.%d.%d-%s [%s, %s]" % (v[0],v[1],v[2],str(v[3]),
+                                               os.name,sys.platform)))
     except:
         # Python 1.5 lacks sys.version_info
-        print("Python %s [%s, %s]" % (string.split(sys.version)[0],
-                                      os.name,sys.platform))
+        print(("Python %s [%s, %s]" % (string.split(sys.version)[0],
+                                      os.name,sys.platform)))
 
     # Python 1.5
     print("			** Python 1.5 features **")

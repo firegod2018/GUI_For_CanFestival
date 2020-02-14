@@ -14,8 +14,8 @@ xml = '''<foo>
 </foo>
 '''
 
-print xml
-print
+print(xml)
+print()
 open('xpath.xml','w').write(xml)
 o = make_instance(xml)
 
@@ -25,6 +25,6 @@ patterns = '''/bar //bar //* /baz/*/bar
               baz//bar/text() /baz/text()[3]'''
 
 for pattern in patterns.split():
-    print 'XPath:', pattern
+    print('XPath:', pattern)
     for match in XPath(o, pattern):
-        print ' ', match
+        print(' ', match)

@@ -41,7 +41,7 @@ import string, sys, re
 
 def dict2Sql(dtd_dict):
     create_table_lines = []
-    for key, col_list in dtd_dict.items():
+    for key, col_list in list(dtd_dict.items()):
         stmt  = "CREATE TABLE "+key
         stmt += " (primary_key BIGINT UNSIGNED PRIMARY KEY,seq INT UNSIGNED"
         for col_name in col_list:
@@ -73,7 +73,7 @@ def parseDTD(raw_dtd):
                 for subtag in elem_split[4:]:
                     if subtag not in dtd_punct:
                         safetag = subtag.replace('-','__')
-                        if dtd_dict.has_key(safetag):
+                        if safetag in dtd_dict:
                             dtd_dict[safetag].append('foreign_key_'+elem_name)
                         else:
                             dtd_dict[safetag] = ['foreign_key_'+elem_name]
@@ -81,7 +81,7 @@ def parseDTD(raw_dtd):
             for subtag in elem_split[2:]:
                 if subtag not in dtd_punct:
                     safetag = subtag.replace('-','__')
-                    if dtd_dict.has_key(safetag):
+                    if safetag in dtd_dict:
                         dtd_dict[safetag].append('foreign_key_'+elem_name)
                     else:
                         dtd_dict[safetag] = ['foreign_key_'+elem_name]
@@ -116,13 +116,13 @@ def parseDTD(raw_dtd):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in ('-h','/h','-?','/?','?','--help'):
-            print __shell_usage__
+            print(__shell_usage__)
         else:
             raw_dtd = open(sys.argv[1]).read()
             for createLine in dict2Sql(parseDTD(raw_dtd)):
-                print createLine+';'
+                print(createLine+';')
     else:
         raw_dtd = sys.stdin.read()
         for createLine in dict2Sql(parseDTD(raw_dtd)):
-            print createLine+';'
+            print(createLine+';')
 

@@ -17,7 +17,7 @@ def get_function_info( func ):
 
     fname = func.__name__
 
-    for name, module in sys.modules.items():
+    for name, module in list(sys.modules.items()):
         if name != '__main__' and \
             hasattr(module, fname) and \
             getattr(module, fname) is func:
@@ -48,7 +48,7 @@ def unpickle_function( module,name,paranoia ):
 # (these are pretty cool to have, even without xml_pickle)
 
 def _get_class_from_locals(dict, modname, classname):
-    for name in dict.keys():
+    for name in list(dict.keys()):
         # class imported by caller
         if name == modname and type(dict[name]) is ModuleType:
             mod = dict[name]
@@ -186,8 +186,8 @@ def _module(thing):
     """
     klass = thing.__class__
     if klass.__module__ == dynamic_module: return None
-    if klass in CLASS_STORE.values(): return None
-    if klass in gnosis.xml.pickle.__dict__.values(): return None
+    if klass in list(CLASS_STORE.values()): return None
+    if klass in list(gnosis.xml.pickle.__dict__.values()): return None
     return thing.__class__.__module__
 
 def safe_eval(s):
@@ -227,7 +227,7 @@ def safe_content(s):
 
     # wrap "regular" python strings as unicode
     if isinstance(s, StringType):
-        s = u"\xbb\xbb%s\xab\xab" % s
+        s = "\xbb\xbb%s\xab\xab" % s
 
     return s.encode('utf-8')
 
@@ -237,7 +237,7 @@ def unsafe_content(s):
     # don't have to "unescape" XML entities (parser does it for us)
 
     # unwrap python strings from unicode wrapper
-    if s[:2]==unichr(187)*2 and s[-2:]==unichr(171)*2:
+    if s[:2]==chr(187)*2 and s[-2:]==chr(171)*2:
         s = s[2:-2].encode('us-ascii')
 
     return s
@@ -247,8 +247,8 @@ def subnodes(node):
     # just remove the #text nodes.
     # for PyXML > 0.8, childNodes includes both <DOM Elements> and
     # DocumentType objects, so we have to separate them.
-    return filter(lambda n: hasattr(n,'_attrs') and \
-                  n.nodeName!='#text', node.childNodes)
+    return [n for n in node.childNodes if hasattr(n,'_attrs') and \
+                  n.nodeName!='#text']
 
 #-------------------------------------------------------------------
 # Python 2.0 doesn't have the inspect module, so we provide

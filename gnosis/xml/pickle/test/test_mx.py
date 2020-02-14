@@ -19,12 +19,12 @@ def testfoo(o1,o2):
             raise "ERROR(1)"
         
 def printfoo(obj):
-    print(type(obj.t), obj.t)
-    print(type(obj.d), obj.d['One'], obj.d['Two'])
-    print(type(obj.ud), obj.ud['One'], obj.ud['Two'])
-    print(type(obj.l), obj.l[0], obj.l[1])
-    print(type(obj.ul), obj.ul[0], obj.ul[1])
-    print(type(obj.tup), obj.tup[0], obj.tup[1])
+    print((type(obj.t), obj.t))
+    print((type(obj.d), obj.d['One'], obj.d['Two']))
+    print((type(obj.ud), obj.ud['One'], obj.ud['Two']))
+    print((type(obj.l), obj.l[0], obj.l[1]))
+    print((type(obj.ul), obj.ul[0], obj.ul[1]))
+    print((type(obj.tup), obj.tup[0], obj.tup[1]))
 
 #print locals()['foo_class'].__module__
 #print type(locals()['foo_class'])

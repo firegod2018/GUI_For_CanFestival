@@ -21,9 +21,10 @@
 #License along with this library; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from gnosis.xml.pickle import *
-from gnosis.xml.pickle.util import setParanoia
-setParanoia(0)
+# from gnosis.xml.pickle import *
+# from gnosis.xml.pickle.util import setParanoia
+# setParanoia(0)
+import pickle
 
 from node import *
 import eds_utils, gen_cfile
@@ -275,8 +276,8 @@ class NodeManager:
     def OpenFileInCurrent(self, filepath):
         try:
             # Open and load file
-            file = open(filepath, "r")
-            node = load(file)
+            file = open(filepath, "rb+")
+            node = pickle.load(file)
             file.close()
             self.CurrentNode = node
             self.CurrentNode.SetNodeID(0)
@@ -297,8 +298,8 @@ class NodeManager:
             if filepath == "":
                 return False
         # Save node in file
-        file = open(filepath, "w")
-        dump(self.CurrentNode, file)
+        file = open(filepath, "wb+")
+        pickle.dump(self.CurrentNode, file)
         file.close()
         self.SetCurrentFilePath(filepath)
         # Update saved state in buffer

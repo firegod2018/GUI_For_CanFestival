@@ -21,17 +21,17 @@ class WeirdUni(str):
 f = Foo('OK')
 x = xml_pickle.dumps(f)
 o = xml_pickle.loads(x)
-print(o.s, type(o.s))
+print((o.s, type(o.s)))
 
 f = Foo('OK')
 x = xml_pickle.dumps(f)
 o = xml_pickle.loads(x)
-print(o.s, type(o.s))
+print((o.s, type(o.s)))
 
 f = Foo(WeirdUni('OK'))
 x = xml_pickle.dumps(f)
 o = xml_pickle.loads(x)
-print(o.s, type(o.s))
+print((o.s, type(o.s)))
 
 # pickler should catch all these unpickleable cases.
 # (to be fixed in gnosis 1.2.x)
@@ -42,7 +42,7 @@ try:
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
     
 try:
     # Unicode string that contains our special string escape    
@@ -50,7 +50,7 @@ try:
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
         
 try:
     # Unicode string that contains our special string escape    
@@ -58,7 +58,7 @@ try:
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
         
 try:
     # Unicode string that contains our special string escape
@@ -66,23 +66,23 @@ try:
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
     
 try:
     # illegal Unicode value for an XML file 
-    f = Foo('\ud800')
+    f = Foo('\\ud800')
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
     
 try:
     # illegal Unicode value for an XML file
-    f = Foo(WeirdUni('\ud800'))
+    f = Foo(WeirdUni('\\ud800'))
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
     
 try:
     # safe_content assumes it can always convert the string
@@ -93,7 +93,7 @@ try:
     x = xml_pickle.dumps(f)
     print("************* ERROR *************")
 except Exception as exc:
-    print("OK  <%s>" % str(exc))
+    print(("OK  <%s>" % str(exc)))
     
 
 

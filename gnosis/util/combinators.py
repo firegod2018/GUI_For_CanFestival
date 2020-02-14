@@ -1,7 +1,8 @@
 from operator import mul, add, truth
+from functools import reduce
 
-apply_each = lambda fns, args=[]: map(apply, fns, [args]*len(fns))
-bools = lambda lst: map(truth, lst)
+apply_each = lambda fns, args=[]: list(map(apply, fns, [args]*len(fns)))
+bools = lambda lst: list(map(truth, lst))
 bool_each = lambda fns, args=[]: bools(apply_each(fns, args))
 conjoin = lambda fns, args=[]: reduce(mul, bool_each(fns, args))
 all = lambda fns: lambda arg, fns=fns: conjoin(fns, (arg,))

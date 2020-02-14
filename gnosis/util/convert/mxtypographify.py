@@ -29,7 +29,7 @@ def jump_count(tl,txt,l,r,s):
     else: head_pos = r
 def emit_debug(tl,txt,l,r,s): 
     ws.append(txt[l:r])
-    print '<<', txt[l:r], '>>'
+    print('<<', txt[l:r], '>>')
     
 #-- What can appear inside, and what can be, markups?
 punctuation = "`!@#$%^&*()_-+=|\{}[]:;'<>,.?/"+'"'
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     sys.stderr.write(sys.argv[1]+' processed in %.3f seconds' 
                      % (time.time()-start)+'\n')
     sys.stderr.write('%d full tagging loops\n' % loops) 
-    print mx_txt
+    print(mx_txt)
 
     # Just for comparison, let us time the [re] version being replaced
     def reTypographify(txt):

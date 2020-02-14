@@ -80,8 +80,8 @@ def parseSQL(query):
     sql_terms = string.split(query)
 
     # Initial validity test
-    if string.upper(sql_terms[0]) <> 'SELECT':
-        raise ValueError, "SELECT query must be specified"
+    if string.upper(sql_terms[0]) != 'SELECT':
+        raise ValueError("SELECT query must be specified")
 
     # Go to it...
     ignore_adjectives = ('STRAIGHT_JOIN','SQL_SMALL_RESULT','DISTINCT','ALL')
@@ -109,7 +109,7 @@ def parseSQL(query):
     for i in range(len(column_names)):
         column_name = column_names[i]
         if "(" in column_name:
-            seq_name = 'column'+`i+1`
+            seq_name = 'column'+repr(i+1)
             column_attr[seq_name] = column_name
             column_names[i] = seq_name
 
@@ -133,14 +133,14 @@ def parsedQuery2DTD(parseStruct,query=""):
     dtd_lst.append(">") # close the root ATTLIST
 
     #-- <row> element and attribute 'num'
-    columns_str = string.replace(`tuple(column_names)`,"'","")
+    columns_str = string.replace(repr(tuple(column_names)),"'","")
     dtd_lst.append("<!ELEMENT row %s>" % columns_str)
     dtd_lst.append("<!ATTLIST row num ID #IMPLIED>")
 
     #-- Individual columns (with attribute if calculated)
     for column in column_names:
         dtd_lst.append("<!ELEMENT %s (#PCDATA)>" % column)
-        if column_attr.has_key(column):
+        if column in column_attr:
             dtd_lst.append('<!ATTLIST %s CALC CDATA #FIXED "%s">' %
                                       (column, column_attr[column]))
     return string.join(dtd_lst,'\n')
@@ -173,11 +173,11 @@ def textResults2XML(table, column_names, RDBMS=MYSQL):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] in ('-h','/h','-?','/?','?','--help'):
-            print __shell_usage__
+            print(__shell_usage__)
         else:
             query = sys.argv[1]
-            print parsedQuery2DTD(parseSQL(query),query)
+            print(parsedQuery2DTD(parseSQL(query),query))
             # print parsedQuery2Fields(parseSQL(query))
     else:
         query = sys.stdin.read()
-        print parsedQuery2DTD(parseSQL(query),query)
+        print(parsedQuery2DTD(parseSQL(query),query))

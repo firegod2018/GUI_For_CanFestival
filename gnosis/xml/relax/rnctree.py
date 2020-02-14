@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # Convert an RELAX NG compact syntax schema to a Node tree
 # This file released to the Public Domain by David Mertz
-from __future__ import generators
+
 import sys
-from rnc_tokenize import token_list
+from .rnc_tokenize import token_list
 
 class ParseError(SyntaxError): pass
 
@@ -28,9 +28,9 @@ OTHER_NAMESPACE = {}
 CONTEXT_FREE = 0
 
 try: enumerate
-except: enumerate = lambda seq: zip(range(len(seq)),seq)
-nodetypes = lambda nl: tuple(map(lambda n: n.type, nl))
-toNodes = lambda toks: map(lambda t: Node(t.type, t.value), toks)
+except: enumerate = lambda seq: list(zip(list(range(len(seq))),seq))
+nodetypes = lambda nl: tuple([n.type for n in nl])
+toNodes = lambda toks: [Node(t.type, t.value) for t in toks]
 
 class Node(object):
     __slots__ = ('type','value','name','quant')
@@ -55,7 +55,7 @@ class Node(object):
         return '\n'.join(out)
 
     def prettyprint(self):
-        print self.format()
+        print(self.format())
 
     def toxml(self):
         if CONTEXT_FREE:
@@ -79,7 +79,7 @@ class Node(object):
 
         for x in self.value:
             if not isinstance(x, Node):
-                raise TypeError, "Unhappy Node.value: "+repr(x)
+                raise TypeError("Unhappy Node.value: "+repr(x))
             elif x.type == START:
                 startelem = '<start><ref name="%s"/></start>' % x.value
                 write('  '*indent+startelem)
@@ -158,7 +158,7 @@ class Node(object):
                     new += '\n    ns=%s' % DEFAULT_NAMESPACE
                 if DATATYPE_LIB[0]:
                     new += '\n    datatypeLibrary=%s' % DATATYPE_LIB[1]
-                for ns, url in OTHER_NAMESPACE.items():
+                for ns, url in list(OTHER_NAMESPACE.items()):
                     new += '\n    xmlns:%s=%s' % (ns, url)
                 new += '>'
                 lines[i] = new
@@ -187,7 +187,7 @@ def findmatch(beg, nodes, offset):
         elif t.type == end: level -= 1
         if level == 0:
             return i+offset
-    raise EOFError, ("No closing token encountered for %s @ %d"
+    raise EOFError("No closing token encountered for %s @ %d"
                       % (beg,offset))
 
 def match_pairs(nodes):
@@ -196,7 +196,7 @@ def match_pairs(nodes):
     while 1:
         if i >= len(nodes): break
         node = nodes[i]
-        if node.type in PAIRS.keys():
+        if node.type in list(PAIRS.keys()):
             # Look for enclosing brackets
             match = findmatch(node.type, nodes, i+1)
             matchtype = PAIRS[node.type][1]
@@ -231,7 +231,7 @@ def type_bodies(nodes):
             newnodes.append(node)
             i += 2
         elif nodes[i] == DEFINE:
-            print nodes[i:]
+            print(nodes[i:])
         else:
             if nodes[i].type == GROUP:   # Recurse into groups
                 value = type_bodies(nodes[i].value)
@@ -251,7 +251,7 @@ def nest_defines(nodes):
         newnodes.append(node)
         if node.type == DEFINE:
             group = []
-            while (i+1) < len(nodes) and nodes[i+1].type <> DEFINE:
+            while (i+1) < len(nodes) and nodes[i+1].type != DEFINE:
                 group.append(nodes[i+1])
                 i += 1
             node.name = node.value
@@ -267,14 +267,14 @@ def intersperse(nodes):
             val = node.value
             ntypes = [n.type for n in val if not isinstance(val,str)]
             inters = [t for t in ntypes if t in (INTERLEAVE,CHOICE,SEQ)]
-            inters = dict(zip(inters,[0]*len(inters)))
+            inters = dict(list(zip(inters,[0]*len(inters))))
             if len(inters) > 1:
-                raise ParseError, "Ambiguity in sequencing: %s" % node
+                raise ParseError("Ambiguity in sequencing: %s" % node)
             if len(inters) > 0:
-                intertype = inters.keys()[0]
+                intertype = list(inters.keys())[0]
                 items = []
                 for pat in node.value:
-                    if pat.type <> intertype:
+                    if pat.type != intertype:
                         items.append(pat)
                 node.value = Node(intertype, items)
         if not isinstance(node.value, str): # No recurse to terminal str
@@ -288,9 +288,9 @@ def scan_NS(nodes):
         if node.type == DEFAULT_NS:
             DEFAULT_NAMESPACE = node.value
         elif node.type == NS:
-            ns, url = map(str.strip, node.value.split('='))
+            ns, url = list(map(str.strip, node.value.split('=')))
             OTHER_NAMESPACE[ns] = url
-        elif node.type == ANNOTATION and not OTHER_NAMESPACE.has_key('a'):
+        elif node.type == ANNOTATION and 'a' not in OTHER_NAMESPACE:
             OTHER_NAMESPACE['a'] =\
               '"http://relaxng.org/ns/compatibility/annotations/1.0"'
         elif node.type == DATATYPES:

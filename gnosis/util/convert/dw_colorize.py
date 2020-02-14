@@ -1,7 +1,7 @@
 """developerWorks/XML Python Source Colorizer (customized from MoinMoin)"""
 
 # Imports
-import cgi, string, sys, cStringIO
+import cgi, string, sys, io
 import keyword, token, tokenize
 
 _KEYWORD = token.NT_OFFSET + 1
@@ -37,17 +37,18 @@ class Parser:
 
         # parse the source and write it
         self.pos = 0
-        text = cStringIO.StringIO(self.raw)
+        text = io.StringIO(self.raw)
         try:
             tokenize.tokenize(text.readline, self)
-        except tokenize.TokenError, ex:
+        except tokenize.TokenError as ex:
             msg = ex[0]
             line = ex[1][0]
-            print "ERROR: %s %s" % (msg, self.raw[self.lines[line]:])
+            print("ERROR: %s %s" % (msg, self.raw[self.lines[line]:]))
 
-    def __call__(self, toktype, toktext, (srow,scol), (erow,ecol), line):
+    def __call__(self, toktype, toktext, xxx_todo_changeme, xxx_todo_changeme1, line):
         """ Token handler"""
-        # calculate new positions
+        (srow,scol) = xxx_todo_changeme
+        (erow,ecol) = xxx_todo_changeme1
         oldpos = self.pos
         newpos = self.lines[srow] + scol
         self.pos = newpos + len(toktext)

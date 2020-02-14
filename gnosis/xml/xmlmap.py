@@ -107,15 +107,15 @@ def make_illegal_xml_regex():
        when used as single chars, from above.
     
        Python won't let you define character ranges, so you can't
-       just say '\U00010000-\U0010FFFF'. However, you can take advantage
+       just say '\\U00010000-\\U0010FFFF'. However, you can take advantage
        of the fact that (D800-DBFF) and (DC00-DFFF) are illegal, unless
        part of a 2-character sequence, to match for the characters.
     """
 
     # First, add a group for all the basic illegal areas above
-    re_xml_illegal = u'([\u0000-\u0008\u000b-\u000c\u000e-\u0019\ufffe-\uffff])'
+    re_xml_illegal = '([\u0000-\u0008\u000b-\u000c\u000e-\u0019\ufffe-\uffff])'
 
-    re_xml_illegal += u"|"
+    re_xml_illegal += "|"
 
     # Next, we know that (uD800-uDBFF) must ALWAYS be followed by (uDC00-uDFFF),
     # and (uDC00-uDFFF) must ALWAYS be preceded by (uD800-uDBFF), so this
@@ -123,7 +123,7 @@ def make_illegal_xml_regex():
     # case checks for start & end of string cases.
 
     # I've defined this oddly due to the bug mentioned at the top of this file
-    re_xml_illegal += u'([%s-%s][^%s-%s])|([^%s-%s][%s-%s])|([%s-%s]$)|(^[%s-%s])' % \
+    re_xml_illegal += '([%s-%s][^%s-%s])|([^%s-%s][%s-%s])|([%s-%s]$)|(^[%s-%s])' % \
                       (chr(0xd800),chr(0xdbff),chr(0xdc00),chr(0xdfff),
                        chr(0xd800),chr(0xdbff),chr(0xdc00),chr(0xdfff),
                        chr(0xd800),chr(0xdbff),chr(0xdc00),chr(0xdfff))
@@ -171,12 +171,12 @@ def is_legal_xml_char( uchar ):
     if len(uchar) == 1:
         return not \
                (
-               (uchar >= u'\u0000' and uchar <= u'\u0008') or \
-               (uchar >= u'\u000b' and uchar <= u'\u000c') or \
-               (uchar >= u'\u000e' and uchar <= u'\u0019') or \
+               (uchar >= '\u0000' and uchar <= '\u0008') or \
+               (uchar >= '\u000b' and uchar <= '\u000c') or \
+               (uchar >= '\u000e' and uchar <= '\u0019') or \
                # always illegal as single chars
                (uchar >= chr(0xd800) and uchar <= chr(0xdfff)) or \
-               (uchar >= u'\ufffe' and uchar <= u'\uffff')
+               (uchar >= '\ufffe' and uchar <= '\uffff')
                )
     elif len(uchar) == 2:
         # all 2-char codings are legal in XML

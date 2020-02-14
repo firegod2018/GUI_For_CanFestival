@@ -185,9 +185,9 @@ class SubindexTable(wx.grid.GridTableBase):
             if colname == "access":
                 value = ACCESS_LIST_DICT[_(value)]
             elif self.editors[row][colname] == "bool":
-                value = BOOL_LIST_DICT[value]
+                value = BOOL_LIST_DICT[_(value)]
             elif self.editors[row][colname] == "option":
-                value = OPTION_LIST_DICT[value]
+                value = OPTION_LIST_DICT[_(value)]
             elif self.editors[row][colname] == "map" and value == _("None"):
                 value = "None"
             self.data[row][colname] = value
