@@ -178,9 +178,9 @@ class objdictedit(wx.Frame, NodeEditorTemplate):
     def _init_coll_MenuBar_Menus(self, parent):
         if self.ModeSolo:
             parent.Append(menu=self.FileMenu, title=_('File'))
-        parent.Append(menu=self.EditMenu, title=_('Edit'))
-        parent.Append(menu=self.AddMenu, title=_('Add'))
-        parent.Append(menu=self.HelpMenu, title=_('Help'))
+            parent.Append(menu=self.EditMenu, title=_('Edit'))
+            parent.Append(menu=self.AddMenu, title=_('Add'))
+            parent.Append(menu=self.HelpMenu, title=_('Help'))
 
     def _init_coll_FileMenu_Items(self, parent):
         parent.Append(helpString='', id=wx.ID_NEW,
@@ -300,16 +300,16 @@ class objdictedit(wx.Frame, NodeEditorTemplate):
 
         if self.ModeSolo:
             self.FileMenu = wx.Menu(title='')
-        self.EditMenu = wx.Menu(title='')
-        self.AddMenu = wx.Menu(title='')
-        self.HelpMenu = wx.Menu(title='')
+            self.EditMenu = wx.Menu(title='')
+            self.AddMenu = wx.Menu(title='')
+            self.HelpMenu = wx.Menu(title='')
 
         self._init_coll_MenuBar_Menus(self.MenuBar)
         if self.ModeSolo:
             self._init_coll_FileMenu_Items(self.FileMenu)
-        self._init_coll_EditMenu_Items(self.EditMenu)
-        self._init_coll_AddMenu_Items(self.AddMenu)
-        self._init_coll_HelpMenu_Items(self.HelpMenu)
+            self._init_coll_EditMenu_Items(self.EditMenu)
+            self._init_coll_AddMenu_Items(self.AddMenu)
+            self._init_coll_HelpMenu_Items(self.HelpMenu)
 
     def _init_ctrls(self, prnt):
         wx.Frame.__init__(self, id=wx.ID_ANY, name='objdictedit',

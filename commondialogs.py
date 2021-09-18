@@ -26,6 +26,8 @@ import wx.grid
 
 import os
 
+import builtins
+
 from node import BE_to_LE, LE_to_BE
 
 ScriptDirectory = os.path.split(__file__)[0]
@@ -483,7 +485,7 @@ class UserTypeDialog(wx.Dialog):
         self.Type = wx.ComboBox(choices=[], id=ID_USERTYPEDIALOGTYPE,
               name='Type', parent=self, pos=wx.Point(0, 0),
               size=wx.Size(0, 28), style=wx.CB_READONLY)
-        self.Type.Bind(wx.wx.EVT_COMBOBOX, self.OnTypeChoice,
+        self.Type.Bind(wx.EVT_COMBOBOX, self.OnTypeChoice,
               id=ID_USERTYPEDIALOGTYPE)
 
         self.Spacer = wx.Panel(id=ID_MAPVARIABLEDIALOGSPACER,
@@ -519,8 +521,9 @@ class UserTypeDialog(wx.Dialog):
               style=wx.TE_RIGHT, value='0')
 
         self.ButtonSizer = self.CreateButtonSizer(wx.OK|wx.CANCEL)
-        #self.Bind(wx.EVT_BUTTON, self.OnOK, id=self.ButtonSizer.GetAffirmativeButton().GetId())
-        self.Bind(wx.EVT_BUTTON, self.OnOK)
+        #buttong_ok = self.ButtonSizer.GetChildren()[1].GetWindow()
+        self.Bind(wx.EVT_BUTTON, self.OnOK, id = self.GetAffirmativeId())
+        #buttong_ok.Bind(wx.EVT_BUTTON, self.OnOK,id=buttong_ok.GetId())
 
         self._init_sizers()
 
@@ -565,7 +568,7 @@ class UserTypeDialog(wx.Dialog):
         else:
             message = _("A type must be selected!")
         if message is not None:
-            message = wx.MessageDialog(self, _("Form isn't valid. %s")%(firstmessage,secondmessage), _("Error"), wx.OK|wx.ICON_ERROR)
+            message = wx.MessageDialog(self, _("Form isn't valid. %s")%message, _("Error"), wx.OK|wx.ICON_ERROR)
             message.ShowModal()
             message.Destroy()
         else:
@@ -644,6 +647,8 @@ class UserTypeDialog(wx.Dialog):
  ID_NODEINFOSDIALOGSTATICTEXT3, ID_NODEINFOSDIALOGSTATICTEXT4, 
  ID_NODEINFOSDIALOGSTATICTEXT5, 
 ] = [wx.NewId() for _init_ctrls in range(11)]
+
+builtins.__dict__['_'] = wx.GetTranslation
 
 def GetNodeTypes():
     _ = lambda x : x
@@ -741,8 +746,8 @@ class NodeInfosDialog(wx.Dialog):
     def __init__(self, parent):
         self._init_ctrls(parent)
         
-        self.staticText2.Hide()
-        self.NodeID.Hide()
+        #self.staticText2.Hide()
+        #self.NodeID.Hide()
         
         for node_type in GetNodeTypes():
             self.Type.Append(_(node_type))
@@ -1570,7 +1575,7 @@ class DCFEntryValuesDialog(wx.Dialog):
         if values != "":
             data = values[4:]
             current = 0
-            for i in xrange(BE_to_LE(values[:4])):
+            for i in range(BE_to_LE(values[:4])):
                 value = {}
                 value["Index"] = BE_to_LE(data[current:current+2])
                 value["Subindex"] = BE_to_LE(data[current+2:current+3])
